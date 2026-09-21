@@ -14,9 +14,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
-    # Enable only after the owner approves publishing catalog metadata publicly.
-    if: vars.PAGES_PUBLISH_ENABLED == 'true'
+  checks:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -31,6 +29,25 @@ jobs:
           package-manager-cache: false
       - name: Check application and catalog pipeline
         run: npm test
+      - name: Check legacy fallback and supplied assets
+        run: npm run check:legacy
+
+  build:
+    needs: checks
+    # Enable only after the owner approves publishing catalog metadata publicly.
+    if: vars.PAGES_PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
       - name: Fetch the completed catalog snapshot
         run: npm run catalog:fetch
         env:

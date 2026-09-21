@@ -64,7 +64,7 @@ Deploy โปรเจกต์จัดทำสารบัญเป็น Web
 5. ตรวจ Environment `github-pages` ให้ deploy ได้เฉพาะ default branch ที่เลือก จากนั้นเปิด **Actions → Publish Green Office → Run workflow** โดยเลือก default branch
 6. เมื่อ job `deploy` สำเร็จ ใช้ลิงก์จาก Environment หรือ Settings → Pages เป็นลิงก์เว็บไซต์ใหม่ ตรวจหน้าแรก หมวด โฟลเดอร์ การค้นหา PDF รูปหลายใบ และปุ่มย้อนกลับก่อนเปลี่ยนลิงก์ที่แจกผู้ใช้
 
-workflow ทดสอบโค้ดก่อนดึงสารบัญ สร้างเฉพาะไฟล์หน้าเว็บที่อนุญาต และอัปโหลดเฉพาะ `dist/` ส่วน Apps Script, credentials, Sheet และไฟล์สำรองไม่อยู่ในเว็บไซต์ที่เผยแพร่ ขั้น build ใช้ `contents: read` ส่วนขั้น deploy ใช้ `pages: write` กับ `id-token: write` [การใช้ GitHub Actions กับ Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
+workflow ทดสอบโค้ดทุกครั้งที่ push แม้ยังไม่เปิดเผยแพร่เว็บ เมื่อเปิดเผยแพร่แล้วจึงดึงสารบัญ สร้างเฉพาะไฟล์หน้าเว็บที่อนุญาต และอัปโหลดเฉพาะ `dist/` ส่วน Apps Script, credentials, Sheet และไฟล์สำรองไม่อยู่ในเว็บไซต์ที่เผยแพร่ ขั้น checks และ build ใช้ `contents: read` ส่วนขั้น deploy ใช้ `pages: write` กับ `id-token: write` [การใช้ GitHub Actions กับ Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
 
 โครงการไม่มี npm dependencies และใช้ Node.js 24 ผ่าน `actions/setup-node` โดยปิด package cache [คู่มือ setup-node](https://github.com/actions/setup-node)
 
