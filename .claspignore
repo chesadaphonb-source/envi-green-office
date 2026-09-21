@@ -1,0 +1,13 @@
+# Push only the reviewed Apps Script application files.
+**/**
+!appsscript.json
+!Code.gs
+!Config.gs
+!DriveService.gs
+!CriteriaService.gs
+!SheetService.gs
+!index.html
+!css.html
+!js.html
+!branding.html
+!hero-image.html

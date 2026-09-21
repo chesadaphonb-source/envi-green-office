@@ -1,0 +1,60 @@
+name: Publish Green Office
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+  schedule:
+    - cron: '17 * * * *'
+
+permissions: {}
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    # Enable only after the owner approves publishing catalog metadata publicly.
+    if: vars.PAGES_PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+          package-manager-cache: false
+      - name: Check application and catalog pipeline
+        run: npm test
+      - name: Fetch the completed catalog snapshot
+        run: npm run catalog:fetch
+        env:
+          CATALOG_EXPORT_URL: ${{ secrets.CATALOG_EXPORT_URL }}
+          CATALOG_EXPORT_TOKEN: ${{ secrets.CATALOG_EXPORT_TOKEN }}
+      - name: Build only public website files
+        run: npm run build
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: dist
+          retention-days: 1
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy validated website
+        id: deployment
+        uses: actions/deploy-pages@v4

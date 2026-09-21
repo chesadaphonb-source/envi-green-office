@@ -1,0 +1,12 @@
+# Local credentials and temporary verification artifacts
+.clasprc.json
+.clasprc.*.json
+.env
+.env.*
+node_modules/
+.local/
+*.log
+
+# Generated public output and private catalog indexer project binding
+dist/
+catalog-sync/.clasp.json

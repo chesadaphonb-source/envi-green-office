@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="color-scheme" content="light">
+  <title><?= appName ?> | <?= year ?></title>
+  <?!= include('css'); ?>
+</head>
+<body data-app-url="<?= appUrl ?>" data-initial-route="<?= initialRoute ?>">
+  <a id="skipLink" class="skip-link" href="#mainContent" target="_self">ข้ามไปยังเนื้อหา</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a id="homeButton" class="brand" href="<?= appUrl ?>" aria-label="Green Office กลับหน้าแรก">
+        <?!= include('branding'); ?>
+        <span class="brand-copy"><strong>ENVI <span>GREEN OFFICE</span></strong><span class="brand-caption">คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์</span></span>
+      </a>
+      <span class="header-year">ประจำปี <strong><?= year ?></strong></span>
+    </div>
+  </header>
+
+  <div class="app-layout container">
+  <aside class="sidebar" aria-label="เมนูหลัก">
+    <p class="sidebar-label">GREEN OFFICE</p>
+    <a id="sidebarHome" class="sidebar-link" href="<?= appUrl ?>"><span aria-hidden="true">⌂</span> หน้าแรก</a>
+    <p class="sidebar-section">หมวดการประเมิน</p>
+    <nav id="categoryNavigation" class="category-navigation" aria-label="เลือกหมวด"><p class="sidebar-status">กำลังโหลดเมนู…</p></nav>
+    <div id="navigationError" hidden><p class="sidebar-status">โหลดเมนูไม่สำเร็จ</p><button id="navigationRetry" class="button button-outline" type="button">ลองโหลดเมนูใหม่</button></div>
+    <div class="sidebar-note"><strong>เล็กน้อยที่เราทำ<br>ยั่งยืนไปด้วยกัน</strong><p>ร่วมสร้างสำนักงานสีเขียว<br>คณะสิ่งแวดล้อม มก.</p><span aria-hidden="true">❧</span></div>
+  </aside>
+  <main id="mainContent" class="main-content" tabindex="-1">
+    <section id="dashboardHero" class="hero" aria-labelledby="heroTitle">
+      <div class="hero-main">
+        <div class="hero-copy">
+          <span class="eyebrow"><span class="status-dot" aria-hidden="true"></span> สำนักงานสีเขียว · ปี <?= year ?></span>
+          <h1 id="heroTitle">ร่วมสร้างสำนักงานสีเขียว<span>เพื่อสิ่งแวดล้อมที่ยั่งยืน</span></h1>
+          <p class="hero-description">ศูนย์รวมเอกสารและหลักฐานการดำเนินงานสำนักงานสีเขียว</p>
+        </div>
+      </div>
+      <?!= include('hero-image'); ?>
+      <div class="hero-bottom">
+        <p class="criteria-caption">เกณฑ์สำนักงานสีเขียว<span>แบบต่ออายุ / ยกระดับ</span></p>
+        <div class="summary" aria-label="จำนวนตามเกณฑ์สำนักงานสีเขียว">
+          <div><strong id="categoryCount">7</strong><span>หมวด</span></div>
+          <div><strong id="topicCount">24</strong><span>ประเด็น</span></div>
+          <div><strong id="indicatorCount">65</strong><span>ตัวชี้วัด</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="search-section" aria-labelledby="searchLabel">
+      <div class="search-intro"><label id="searchLabel" for="searchInput">ค้นหาเอกสารและโฟลเดอร์</label><p>ค้นหาชื่อจากทุกหมวดและโฟลเดอร์ย่อย</p></div>
+      <form id="searchForm" class="search-form" role="search" action="<?= appUrl ?>" method="get" target="_top">
+        <div class="search-input-wrap">
+          <svg aria-hidden="true" viewBox="0 0 24 24" fill="none"><circle cx="10.7" cy="10.7" r="6.7" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input id="searchInput" name="q" type="search" placeholder="พิมพ์ชื่อเอกสาร หรือโฟลเดอร์…" maxlength="120" required autocomplete="off">
+        </div>
+        <button class="button button-primary" type="submit">ค้นหา</button>
+      </form>
+    </section>
+
+    <nav class="page-navigation" aria-label="เมนูนำทาง">
+      <div class="page-navigation-links"><a id="dashboardLink" class="button button-quiet" href="<?= appUrl ?>">หน้าแรก / ทุกหมวด</a><a id="parentLink" class="button button-outline" hidden>← กลับโฟลเดอร์ก่อนหน้า</a></div>
+      <button id="copyPageButton" class="button button-quiet" type="button">คัดลอกลิงก์หน้านี้</button>
+    </nav>
+    <div id="sharePanel" class="share-panel" hidden><label for="shareUrl">ลิงก์สำหรับส่งต่อหน้านี้</label><input id="shareUrl" type="url" readonly><p id="shareStatus" role="status"></p></div>
+    <nav id="breadcrumbNav" class="breadcrumb-nav" aria-label="เส้นทางโฟลเดอร์" hidden><ol id="breadcrumbs" class="breadcrumbs"></ol></nav>
+
+    <section id="workspace" class="workspace" aria-labelledby="viewTitle" aria-busy="true">
+      <div class="section-header">
+        <div class="section-heading"><span id="sectionEyebrow" class="section-eyebrow">ENERGY OVERVIEW</span><h2 id="viewTitle" tabindex="-1">การใช้พลังงาน</h2><p id="viewDescription" hidden></p></div>
+        <button id="refreshButton" class="button button-quiet" type="button" disabled><svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M16.5 8a6.5 6.5 0 1 0-.8 5.5M16.5 3.5V8H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span>โหลดข้อมูลใหม่</span></button>
+      </div>
+
+      <section id="categoryOverview" class="category-overview" aria-labelledby="categoryBannerTitle" hidden>
+        <div class="category-banner"><span id="categoryBadge" class="category-badge" aria-hidden="true"></span><div class="category-banner-copy"><span class="section-eyebrow">GREEN OFFICE · หมวดการประเมิน</span><h3 id="categoryBannerTitle"></h3><p id="categoryIntro"></p></div><div id="categoryIllustration" class="category-illustration" aria-hidden="true"></div></div>
+        <div class="category-guide"><section class="guide-card"><h4>สิ่งที่หมวดนี้ให้ความสำคัญ</h4><ul id="categoryHighlights"></ul></section><section class="guide-card"><h4>เอกสารและหลักฐาน</h4><p>เลือกโฟลเดอร์หรือเอกสารด้านล่าง เพื่ออ่านหลักฐานการดำเนินงานของคณะ</p><p class="guide-hint">เปิดอ่าน PDF และรูปภาพได้ในหน้านี้</p></section></div>
+        <div class="category-goal"><span aria-hidden="true">◎</span><div><strong>เป้าหมายของหมวดนี้</strong><p id="categoryGoal"></p></div></div>
+      </section>
+
+      <div id="warningPanel" class="notice notice-warning" role="status" hidden></div>
+      <div id="errorPanel" class="notice notice-error" role="alert" hidden><div><strong>ไม่สามารถโหลดข้อมูลได้</strong><p id="errorMessage"></p></div><button id="retryButton" class="button button-quiet" type="button">ลองใหม่ตั้งแต่ต้น</button></div>
+      <div id="loadingPanel" class="loading-panel" role="status"><span class="spinner" aria-hidden="true"></span><span id="loadingMessage">กำลังอ่านข้อมูลจาก Google Drive…</span></div>
+
+      <div id="energyChartArea" class="energy-chart-area" aria-hidden="true"></div>
+
+      <div id="browserPanel" hidden>
+        <div id="resultSummary" class="result-summary" role="status"></div>
+        <div id="documentLayout" class="document-layout">
+          <div id="fileTableWrap" class="document-library" hidden>
+            <div class="library-heading"><h3>รายการหลักฐาน</h3><span>กดกล่องเพื่อเปิดดูรายการ</span></div>
+            <div id="fileList" class="file-list"></div>
+          </div>
+          <section id="previewPanel" class="preview-panel" aria-labelledby="previewTitle" hidden>
+            <div class="preview-header">
+              <div class="preview-heading"><span id="previewType" class="preview-type"></span><h3 id="previewTitle" tabindex="-1"></h3><p id="previewPosition"></p></div>
+              <div class="preview-actions"><a id="filePageLink" class="button button-outline">เปิดหน้าเอกสาร</a><button id="previousPreviewButton" class="button button-quiet" type="button" aria-label="เอกสารก่อนหน้า">←</button><button id="nextPreviewButton" class="button button-quiet" type="button" aria-label="เอกสารถัดไป">→</button><button id="expandPreviewButton" class="button button-outline" type="button" aria-expanded="false">ขยาย</button></div>
+            </div>
+            <div id="previewFrameWrap" class="preview-frame-wrap"></div>
+            <p class="preview-help">หากตัวอย่างไม่แสดง ให้ตรวจสอบสิทธิ์ของไฟล์ หรือ <a id="previewFallbackLink" target="_blank" rel="noopener noreferrer">เปิดต้นฉบับใน Drive ↗</a></p>
+          </section>
+        </div>
+        <section id="imageGallery" class="image-gallery" aria-labelledby="imageGalleryTitle" hidden>
+          <div class="gallery-heading"><h3 id="imageGalleryTitle">รูปภาพในหัวข้อนี้</h3><p id="imageGallerySummary" role="status"></p></div>
+          <div id="imageGalleryList" class="image-gallery-list"></div>
+        </section>
+        <div id="wordSection" class="word-section" hidden>
+          <button id="wordToggle" class="word-toggle" type="button" aria-expanded="false" aria-controls="wordList"></button>
+          <div id="wordList" class="file-list word-list" hidden></div>
+        </div>
+        <div id="emptyPanel" class="empty-panel" hidden><span class="empty-symbol" aria-hidden="true">⌕</span><h3 id="emptyTitle"></h3><p id="emptyMessage"></p></div>
+        <div id="pagination" class="pagination" hidden><p id="paginationMessage"></p><button id="loadMoreButton" class="button button-outline" type="button">แสดงรายการเพิ่มเติม</button></div>
+      </div>
+    </section>
+
+    <footer class="site-footer"><span>Green Office ENVI <span id="footerYear"><?= year ?></span></span><span>คณะสิ่งแวดล้อม · มหาวิทยาลัยเกษตรศาสตร์</span></footer>
+  </main>
+  </div>
+  <noscript><p class="noscript-message">กรุณาเปิดใช้งาน JavaScript เพื่อดูเอกสารจาก Google Drive</p></noscript>
+  <?!= include('js'); ?>
+</body>
+</html>
