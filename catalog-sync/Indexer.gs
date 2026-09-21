@@ -3,6 +3,14 @@ function setupCatalogSync() {
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(1000)) throw new Error('มีงานอัปเดตกำลังทำงานอยู่');
   try {
+    const props = properties_();
+    if (!props.getProperty('CATALOG_SHEET_ID')) {
+      // A Sheet-bound project can identify its storage when run from the editor.
+      // Web-app exports still use the saved ID, never the active spreadsheet.
+      const boundSheet = SpreadsheetApp.getActiveSpreadsheet();
+      if (!boundSheet) throw new Error('กรุณาตั้ง CATALOG_SHEET_ID หรือรันจากโปรเจกต์ที่ผูกกับ Sheet สารบัญ');
+      props.setProperty('CATALOG_SHEET_ID', boundSheet.getId());
+    }
     const book = catalogBook_();
     CATALOG_CONFIG.TABS.forEach(function(name) {
       if (!book.getSheetByName(name)) book.insertSheet(name);
@@ -14,6 +22,12 @@ function setupCatalogSync() {
     }
     return { ready: true, exportEnabled: properties_().getProperty('CATALOG_PUBLISH_ENABLED') === 'true' };
   } finally { lock.releaseLock(); }
+}
+
+/** One editor Run authorizes services, sets up storage and starts the first scan. */
+function initializeCatalog() {
+  setupCatalogSync();
+  return syncCatalog();
 }
 
 /** Timer/manual entry point. Scan progress survives executions and failures. */

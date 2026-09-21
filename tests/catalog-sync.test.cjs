@@ -136,6 +136,17 @@ test('setup is idempotent and never enables publication', () => {
   assert.deepEqual(h.exportCatalog('anything'), { ok: false, error: 'export_disabled' });
 });
 
+test('editor initialization binds its dedicated Sheet and begins the first scan without enabling export', () => {
+  const h = harness();
+  h.props.delete('CATALOG_SHEET_ID');
+  h.context.SpreadsheetApp.getActiveSpreadsheet = () => ({ getId: () => 'private-sheet' });
+  assert.equal(h.context.initializeCatalog().status, 'complete');
+  assert.equal(h.props.get('CATALOG_SHEET_ID'), 'private-sheet');
+  assert.ok(h.props.has('CATALOG_ACTIVE_SNAPSHOT'));
+  assert.equal(h.props.has('CATALOG_PUBLISH_ENABLED'), false);
+  assert.equal(h.triggers.length, 1);
+});
+
 test('complete exported snapshot validates against the frontend schema without exposing Drive root', () => {
   const h = harness();
   h.entry('nested', 'รูปและ PDF', 'cat1');

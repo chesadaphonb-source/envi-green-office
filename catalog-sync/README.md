@@ -7,9 +7,9 @@
 1. สร้าง Google Sheet ใหม่สำหรับสารบัญโดยเฉพาะ เก็บเป็นส่วนตัว ไม่ต้อง Publish to web และไม่ต้องเปลี่ยนสิทธิ์ไฟล์ Drive
 2. สร้าง Apps Script ใหม่ในบัญชีที่อ่านโฟลเดอร์ Drive ของ Green Office ได้ ห้ามใช้ Script ID ของเว็บเดิม
 3. คัดลอก `.clasp.example.json` เป็น `.clasp.json` ในโฟลเดอร์นี้ ใส่ Script ID ใหม่ แล้วรัน `clasp.cmd push` จาก `catalog-sync` เท่านั้น หรือคัดลอกไฟล์ `.gs` และ manifest ลงโปรเจกต์ใหม่ผ่านหน้า Apps Script
-4. ใน Project Settings → Script Properties ตั้ง `CATALOG_SHEET_ID` เป็นรหัสของ Sheet ใหม่
-5. รัน `setupCatalogSync` และอนุญาตสิทธิ์อ่าน Drive, เขียน Sheet และสร้าง trigger ฟังก์ชันจะสร้างแท็บ `Catalog_Staging`, `Catalog_Checkpoint`, `Catalog_Snapshot_A`, `Catalog_Snapshot_B` และ trigger ทุก 15 นาทีเพียงหนึ่งตัว ไม่เปลี่ยนสิทธิ์การแชร์
-6. รัน `syncCatalog` เพื่อเริ่มทันที ถ้าข้อมูลมาก รอบถัดไปจะทำต่อจากจุดเดิม ดู `CATALOG_LAST_STATUS` ใน Script Properties หรือหน้า Executions หากเกิดข้อผิดพลาด
+4. ถ้าเป็นโปรเจกต์ที่สร้างผูกกับ Sheet ใหม่อยู่แล้ว ระบบจะจำรหัส Sheet ให้อัตโนมัติเมื่อรันจากหน้า Apps Script ครั้งแรก สำหรับโปรเจกต์ standalone ให้ตั้ง `CATALOG_SHEET_ID` ใน Project Settings → Script Properties เป็นรหัส Sheet ใหม่
+5. เลือกฟังก์ชัน `initializeCatalog` แล้วกด Run จากหน้า Apps Script และอนุญาตสิทธิ์อ่าน Drive, เขียน Sheet และสร้าง trigger ฟังก์ชันจะสร้างแท็บ `Catalog_Staging`, `Catalog_Checkpoint`, `Catalog_Snapshot_A`, `Catalog_Snapshot_B` พร้อม trigger ทุก 15 นาทีเพียงหนึ่งตัว แล้วเริ่มสแกนรอบแรก ไม่เปลี่ยนสิทธิ์การแชร์หรือเปิดส่งออกสาธารณะ
+6. ถ้าข้อมูลมาก รอบถัดไปจะทำต่อจากจุดเดิม หรือรัน `syncCatalog` เพื่อทำต่อทันที ดู `CATALOG_LAST_STATUS` ใน Script Properties หรือหน้า Executions หากเกิดข้อผิดพลาด การรัน `setupCatalogSync` อย่างเดียวจะเตรียมแท็บและ trigger โดยยังไม่เริ่มสแกน
 7. ตรวจ snapshot และยืนยันว่าชื่อเอกสาร เส้นทางโฟลเดอร์ รหัสไฟล์ และลิงก์ทั้งหมดที่จะส่งออกเผยแพร่ต่อบุคคลทั่วไปได้ **GitHub Pages และ `catalog.json` เป็นข้อมูลสาธารณะ** แม้เนื้อหาไฟล์ Drive จะยังจำกัดสิทธิ์อยู่ก็ตาม
 8. เมื่อตรวจเรียบร้อย ตั้ง `CATALOG_EXPORT_TOKEN` เป็นค่าสุ่มที่เดายากอย่างน้อย 32 ตัวอักษร และตั้ง `CATALOG_PUBLISH_ENABLED` เป็น `true` เอง โค้ดจะไม่เปิดสวิตช์นี้ให้อัตโนมัติ
 9. Deploy โปรเจกต์ใหม่นี้เป็น Web app: Execute as เจ้าของโปรเจกต์, Who has access Anyone ใช้ URL `/exec` เป็น GitHub Actions secret `CATALOG_EXPORT_URL` และ token เดียวกันเป็น `CATALOG_EXPORT_TOKEN` ตามคู่มือ migration หลัก ห้ามใส่ token ลง HTML/JS, URL, Sheet หรือ Git
