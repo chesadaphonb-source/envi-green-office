@@ -387,3 +387,39 @@
   .listing-control select{width:100%;min-height:48px;padding:9px 12px;color:var(--ink);background:#fff;border:1px solid #80988d;border-radius:8px}
   .listing-stats,.listing-updated{flex-basis:100%;margin:0;overflow-wrap:anywhere;font-size:1rem;color:var(--muted)}
   .listing-updated:empty,.listing-stats:empty{display:none}
+  .about-teaser{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:20px;padding:22px 26px;border:1px solid var(--line);border-left:5px solid var(--green);border-radius:14px;background:#fff}
+  .about-teaser h2{margin:6px 0;font-size:1.4rem;line-height:1.6;color:var(--forest)}
+  .about-teaser p{margin:0;color:var(--muted)}
+  .about-teaser .button{flex-shrink:0}
+  .about-page{display:grid;gap:26px;overflow-wrap:anywhere}
+  .about-page h3{font-size:1.65rem;line-height:1.55;margin:8px 0 18px;color:var(--forest)}
+  .about-page h4{font-size:1.25rem;line-height:1.6;margin:0 0 10px;color:var(--ink)}
+  .about-page p{margin:0 0 16px;line-height:1.9}
+  .story-intro{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);align-items:center;gap:28px;padding:32px;border:1px solid var(--line);border-radius:20px;background:#fff}
+  .story-label{font-size:1rem;letter-spacing:.03em;color:var(--green);font-weight:600}
+  .story-intro figure{margin:0}
+  .story-intro img{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:cover;border-radius:14px}
+  .story-intro figcaption{margin-top:10px;font-size:1rem;color:var(--muted)}
+  .source-link{display:inline-block;font-size:1rem;line-height:1.8;text-underline-offset:4px;padding-block:6px}
+  .story-achievement{display:flex;align-items:center;gap:26px;padding:28px 32px;background:#fff;border:1px solid #d9c990;border-top:4px solid #aa8426;border-radius:16px}
+  .story-achievement h3{margin:0 0 8px;font-size:1.4rem}
+  .story-achievement p{margin-bottom:4px;color:var(--muted);font-size:1rem}
+  .achievement-year{flex-shrink:0;text-align:center;color:#76590d;font-size:1rem;line-height:1.6;padding-right:24px;border-right:1px solid #e2d6b3}
+  .achievement-year strong{font-size:2rem}
+  .achievement-score{flex-shrink:0;display:flex;flex-direction:column;text-align:center;color:#76590d;font-size:1rem}
+  .achievement-score strong{font-size:2.75rem;line-height:1.3;font-variant-numeric:tabular-nums}
+  .story-section{padding:32px;border:1px solid var(--line);border-radius:18px;background:#fff}
+  .story-note{color:var(--muted);max-width:75ch}
+  .story-timeline{list-style:none;padding:0;margin:28px 0 0}
+  .story-timeline li{position:relative;display:grid;grid-template-columns:180px minmax(0,1fr);gap:28px;padding:0 0 30px 30px;border-left:2px solid #c5dcc9}
+  .story-timeline li:last-child{padding-bottom:0}
+  .story-timeline li::before{content:"";position:absolute;left:-8px;top:7px;width:14px;height:14px;border-radius:50%;background:var(--green);box-shadow:0 0 0 5px #edf5eb}
+  .story-timeline time{font-size:1.05rem;font-weight:600;color:var(--green)}
+  .story-timeline p{margin-bottom:4px}
+  .preparation-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:24px}
+  .preparation-card{border:1px dashed #a8bfad;border-radius:12px;padding:22px;background:#fff}
+  .pending-label{display:inline-block;font-size:1rem;color:#52624c;background:#f0f5ec;border-radius:6px;padding:4px 10px;margin-bottom:16px}
+  .preparation-card p{font-size:1rem;margin-bottom:0;color:var(--muted)}
+  .story-reviewed{font-size:1rem;color:var(--muted)}
+  @media(max-width:1200px){.story-intro{grid-template-columns:minmax(0,1fr)}.story-intro figure{max-width:600px}.story-achievement{flex-wrap:wrap}.preparation-grid{grid-template-columns:minmax(0,1fr)}.achievement-score{margin-left:auto}}
+  @media(max-width:600px){.about-teaser{align-items:stretch;flex-direction:column;padding:20px}.story-intro,.story-section,.story-achievement{padding:22px}.about-page h3{font-size:1.5rem}.story-timeline li{grid-template-columns:minmax(0,1fr);gap:8px;padding-left:22px}.achievement-year{border:0;padding:0;text-align:left}.achievement-score{margin-left:0}.story-achievement{align-items:flex-start;flex-direction:column}.about-page{gap:18px}}

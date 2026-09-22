@@ -8,6 +8,57 @@ const vm = require('node:vm');
 const { Element } = require('./dom-harness.cjs');
 const root = path.resolve(__dirname, '..');
 
+test('about deep link stays readable when catalog is unavailable and has a shareable SIT address', async () => {
+  const page = client({ url: 'https://envi.example/repo/sit/?page=about' });
+  assert.equal(page.element('aboutPage').hidden, false);
+  assert.equal(page.element('energyChartArea').hidden, true);
+  assert.equal(page.element('browserPanel').hidden, true);
+  assert.equal(page.element('loadingPanel').hidden, true);
+  assert.equal(page.element('refreshButton').hidden, true);
+  assert.equal(page.element('sidebarAbout').getAttribute('aria-current'), 'page');
+  page.next('getDashboardData').failure(new Error('offline'));
+  await page.flush();
+  assert.equal(page.element('aboutPage').hidden, false);
+  assert.equal(page.element('errorPanel').hidden, true);
+  assert.equal(page.element('navigationError').hidden, false);
+  page.element('copyPageButton').click();
+  await page.flush();
+  assert.equal(page.clipboardWrites[0], 'https://envi.example/repo/sit/?page=about');
+});
+
+test('about navigation discards pending document responses and supports browser back and forward', async () => {
+  const page = await boot();
+  page.element('categoryNavigation').children[0].click();
+  const pending = page.next('getFolderContents');
+  page.element('sidebarAbout').click();
+  pending.success({ folder: { id: 'category-1', name: 'Old folder' }, items: [], totalItems: 0, breadcrumbs: [] });
+  await page.flush();
+  assert.equal(page.element('aboutPage').hidden, false);
+  assert.equal(page.element('viewTitle').textContent, 'ความเป็นมาของสำนักงานสีเขียว');
+  assert.equal(page.element('previewPanel').hidden, true);
+  page.element('sidebarHome').click();
+  page.next('getDashboardData').success(dashboard());
+  await page.flush();
+  assert.equal(page.element('aboutPage').hidden, true);
+  assert.equal(page.element('energyChartArea').hidden, false);
+  assert.equal(page.element('aboutTeaser').hidden, false);
+  assert.equal(page.element('refreshButton').hidden, false);
+  page.back();
+  assert.equal(page.window.location.search, '?page=about');
+  assert.equal(page.element('aboutPage').hidden, false);
+  page.forward();
+  assert.equal(page.element('aboutPage').hidden, true);
+});
+
+test('unknown or conflicting content-page routes do not silently show the homepage', () => {
+  for (const query of ['?page=unknown', '?page=about&folder=category-1', '?page=about&page=about']) {
+    const page = client({ url: 'https://envi.example/repo/sit/' + query });
+    assert.equal(page.element('errorPanel').hidden, false);
+    assert.equal(page.element('aboutPage').hidden, true);
+    assert.equal(page.element('copyPageButton').disabled, true);
+  }
+});
+
 // Exercise native browser history and asynchronous catalog reads without Google RPC.
 // The small DOM double is for behavior checks; it does not render the visual layout.
 function client(options = {}) {

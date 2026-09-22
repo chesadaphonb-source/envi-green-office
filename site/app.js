@@ -38,11 +38,14 @@
 
   function normalizeRoute(parameters) {
     const result = {};
-    for (const key of ['folder', 'file', 'q']) {
+    for (const key of ['folder', 'file', 'q', 'page']) {
       const value = parameters && parameters[key];
       if (value === undefined || value === '') continue;
       if (typeof value !== 'string') throw new Error('ลิงก์หน้านี้ไม่ถูกต้อง กรุณากลับหน้าแรก');
-      if (key === 'q') {
+      if (key === 'page') {
+        if (value !== 'about') throw new Error('ไม่พบหน้าที่ต้องการ กรุณากลับหน้าแรก');
+        result.page = value;
+      } else if (key === 'q') {
         const query = value.trim().normalize('NFC');
         if (query.length > 120) throw new Error('คำค้นหาในลิงก์ยาวเกินไป');
         if (query) result.q = query;
@@ -101,7 +104,8 @@
   function navigate(parameters, mode) {
     try {
       const route = normalizeRoute(parameters);
-      if (route.file) openFile(route.file, mode);
+      if (route.page === 'about') showAbout(mode);
+      else if (route.file) openFile(route.file, mode);
       else if (route.folder) openFolder(route.folder, mode);
       else if (route.q) search(route.q, mode);
       else loadDashboard(mode);
@@ -222,10 +226,14 @@
     byId('documentLayout').classList.remove('single-document');
     byId('filePageLink').hidden = view === 'file';
     const dashboard = view === 'dashboard';
+    const about = view === 'about';
+    byId('aboutPage').hidden = !about;
+    byId('aboutTeaser').hidden = !dashboard;
+    byId('refreshButton').hidden = about;
     byId('dashboardHero').hidden = !dashboard;
     byId('energyChartArea').hidden = !dashboard;
     byId('viewDescription').hidden = dashboard;
-    byId('browserPanel').hidden = dashboard;
+    byId('browserPanel').hidden = dashboard || about;
     byId('listingControls').hidden = !['folder', 'search'].includes(view);
     byId('listingStats').textContent = '';
     byId('listingUpdated').textContent = '';
@@ -238,6 +246,22 @@
     byId('sectionEyebrow').textContent = dashboard ? 'ENERGY OVERVIEW' : 'DOCUMENT LIBRARY';
     renderBreadcrumbs([]);
     byId('breadcrumbNav').hidden = dashboard;
+  }
+
+  function showAbout(mode) {
+    ++state.request; // A slow document response must not replace this static page.
+    commitRoute({ page: 'about' }, mode);
+    prepareView('about');
+    byId('searchInput').value = '';
+    byId('errorPanel').hidden = true;
+    setBusy(false);
+    byId('sectionEyebrow').textContent = 'OUR GREEN JOURNEY';
+    byId('viewTitle').textContent = 'ความเป็นมาของสำนักงานสีเขียว';
+    byId('viewDescription').textContent = 'คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์';
+    byId('breadcrumbs').appendChild(node('li', '', 'ความเป็นมา'));
+    document.title = 'ความเป็นมา | Green Office ENVI';
+    byId('viewTitle').focus({ preventScroll: true });
+    loadNavigation();
   }
 
   function loadDashboard(mode) {
@@ -309,7 +333,9 @@
 
   function updateNavigation() {
     byId('sidebarHome').removeAttribute('aria-current');
+    byId('sidebarAbout').removeAttribute('aria-current');
     if (state.view === 'dashboard') byId('sidebarHome').setAttribute('aria-current', 'page');
+    if (state.view === 'about') byId('sidebarAbout').setAttribute('aria-current', 'page');
     Array.from(byId('categoryNavigation').children).forEach(function (link) {
       link.removeAttribute('aria-current');
       if (activeCategory && link.getAttribute('data-category') === String(activeCategory)) {
@@ -434,7 +460,8 @@
   }
 
   function restart() {
-    if (state.view === 'folder') openFolder(state.folderId, 'none');
+    if (state.view === 'about') showAbout('none');
+    else if (state.view === 'folder') openFolder(state.folderId, 'none');
     else if (state.view === 'search') search(state.query, 'none');
     else if (state.view === 'file') openFile(currentRoute.file, 'none');
     else loadDashboard(state.view === 'invalid' ? 'replace' : 'none');
@@ -734,6 +761,8 @@
     setRouteLink(byId('homeButton'), {});
     setRouteLink(byId('dashboardLink'), {});
     setRouteLink(byId('sidebarHome'), {});
+    setRouteLink(byId('sidebarAbout'), { page: 'about' });
+    setRouteLink(byId('aboutTeaserLink'), { page: 'about' });
     byId('navigationRetry').addEventListener('click', loadNavigation);
     byId('skipLink').addEventListener('click', function (event) {
       event.preventDefault();
@@ -772,7 +801,7 @@
     function readLocation(mode) {
       const parameters = {};
       const query = new URLSearchParams(window.location.search);
-      for (const key of ['folder', 'file', 'q']) {
+      for (const key of ['folder', 'file', 'q', 'page']) {
         if (query.has(key)) parameters[key] = query.getAll(key).length === 1 ? query.get(key) : null;
       }
       navigate(parameters, mode);
