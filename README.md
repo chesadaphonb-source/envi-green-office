@@ -4,9 +4,13 @@
 
 ## รุ่น GitHub Pages
 
-หน้าเว็บใหม่อยู่ใน `site/` โดยอ่านสารบัญที่โหลดครั้งเดียวสำหรับการเปลี่ยนหน้าและค้นหา ส่วน `catalog-sync/` เป็น Apps Script แยกที่จัดทำสารบัญจาก Drive ลง Google Sheet และ `.github/workflows/pages.yml` เตรียมส่งสารบัญพร้อมหน้าเว็บไปยัง GitHub Pages ไฟล์ PDF และรูปเอกสารยังเปิดจาก Drive ตามสิทธิ์เดิม
+เว็บใช้งานจริง: **[Green Office ENVI](https://chesadaphonb-source.github.io/envi-green-office/)** เผยแพร่บน GitHub Pages แล้วเมื่อ 22 กันยายน 2569
 
-อ่าน [วิธีทดลองและเชื่อม GitHub Pages](docs/github-pages.md) และ [การตั้งค่า Apps Script จัดทำสารบัญ](catalog-sync/README.md) โค้ดเตรียมไว้ในเครื่องแล้ว ยังต้องเชื่อม repository, Sheet และโปรเจกต์จัดทำสารบัญก่อนใช้งานจริง
+หน้าเว็บใหม่อยู่ใน `site/` โดยอ่านสารบัญที่โหลดครั้งเดียวสำหรับการเปลี่ยนหน้าและค้นหา ส่วน `catalog-sync/` เป็น Apps Script แยกที่จัดทำสารบัญจาก Drive ลง Google Sheet และ `.github/workflows/pages.yml` ส่งสารบัญพร้อมหน้าเว็บไปยัง GitHub Pages ไฟล์ PDF และรูปเอกสารยังเปิดจาก Drive ตามสิทธิ์เดิม
+
+เพิ่มเอกสารในโฟลเดอร์ Drive เดิมได้ตามปกติ ระบบจัดทำสารบัญทำงานทุก 15 นาที และ GitHub ตั้งเวลาอัปเดตเว็บทุกชั่วโมง ข้อมูลจะแสดงเมื่อสแกนครบและเผยแพร่สำเร็จ หากต้องการสั่งอัปเดตเอง เปิด [Actions → Publish Green Office](https://github.com/chesadaphonb-source/envi-green-office/actions/workflows/pages.yml) แล้วเลือก **Run workflow → main → Run workflow** เพื่อรับสารบัญที่สแกนสำเร็จล่าสุด
+
+อ่าน [วิธีทดลองและดูแล GitHub Pages](docs/github-pages.md) และ [การตั้งค่า Apps Script จัดทำสารบัญ](catalog-sync/README.md) สำหรับดูแลระบบหรือเชื่อมโปรเจกต์ใหม่
 
 ```powershell
 npm.cmd test
