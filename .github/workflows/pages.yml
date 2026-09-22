@@ -2,7 +2,7 @@ name: Publish Green Office
 
 on:
   push:
-    branches: [main, master]
+    branches: [main, sit]
   workflow_dispatch:
   schedule:
     - cron: '17 * * * *'
@@ -14,55 +14,52 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  checks:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          persist-credentials: false
-      - uses: actions/setup-node@v7
-        with:
-          node-version: '24'
-          package-manager-cache: false
-      - name: Check application and catalog pipeline
-        run: npm test
-      - name: Check legacy fallback and supplied assets
-        run: npm run check:legacy
-
   build:
-    needs: checks
-    # Enable only after the owner approves publishing catalog metadata publicly.
-    if: vars.PAGES_PUBLISH_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     permissions:
       contents: read
     steps:
-      - uses: actions/checkout@v6
+      - name: Check out PRD from main
+        uses: actions/checkout@v6
         with:
+          ref: main
+          persist-credentials: false
+      - name: Check out SIT separately
+        uses: actions/checkout@v6
+        with:
+          ref: sit
+          path: .local/sit-source
           persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
           package-manager-cache: false
+      - name: Check PRD
+        run: npm test && npm run check:legacy
+      - name: Check SIT
+        working-directory: .local/sit-source
+        run: npm test && npm run check:legacy
       - name: Fetch the completed catalog snapshot
+        if: vars.PAGES_PUBLISH_ENABLED == 'true'
         run: npm run catalog:fetch
         env:
           CATALOG_EXPORT_URL: ${{ secrets.CATALOG_EXPORT_URL }}
           CATALOG_EXPORT_TOKEN: ${{ secrets.CATALOG_EXPORT_TOKEN }}
-      - name: Build only public website files
-        run: npm run build
+      - name: Build PRD and SIT without merging their source
+        if: vars.PAGES_PUBLISH_ENABLED == 'true'
+        run: node scripts/build-environments.cjs
       - uses: actions/configure-pages@v5
+        if: vars.PAGES_PUBLISH_ENABLED == 'true'
       - uses: actions/upload-pages-artifact@v4
+        if: vars.PAGES_PUBLISH_ENABLED == 'true'
         with:
           path: dist
           retention-days: 1
 
   deploy:
     needs: build
+    if: vars.PAGES_PUBLISH_ENABLED == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     permissions:
@@ -72,6 +69,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy validated website
+      - name: Deploy validated PRD and SIT
         id: deployment
         uses: actions/deploy-pages@v4
