@@ -1,7 +1,8 @@
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;600;700&family=Sarabun:wght@400;600;700&display=swap');
   :root{--forest:#174b36;--green:#237149;--gold:#f4d77e;--ink:#24392d;--muted:#46624f;--line:#d5e3d2;--paper:#f1f8ee;--white:#fff;--radius:12px;--accent:#286b46;--tint:#eaf5e4;--soft:#cfe3c6}
   *{box-sizing:border-box}
   [hidden]{display:none!important}
-  body{margin:0;background:radial-gradient(ellipse at 0 240px,#dfefda 0,transparent 650px),radial-gradient(ellipse at 100% 620px,#faf0d5 0,transparent 650px),var(--paper);color:var(--ink);font-family:"Leelawadee UI",Tahoma,"Noto Sans Thai",sans-serif;font-size:1.125rem;line-height:1.8;-webkit-font-smoothing:antialiased}
+  body{margin:0;background:radial-gradient(ellipse at 0 240px,#dfefda 0,transparent 650px),radial-gradient(ellipse at 100% 620px,#faf0d5 0,transparent 650px),var(--paper);color:var(--ink);font-family:"Noto Sans Thai","Sarabun","Leelawadee UI","Tahoma",sans-serif;font-size:1.125rem;line-height:1.8;-webkit-font-smoothing:antialiased}
   button,input,select{font:inherit}
   button,a,input{-webkit-tap-highlight-color:transparent}
   button{cursor:pointer}
@@ -12,15 +13,15 @@
   svg{display:block}
   .container{width:min(1240px,calc(100% - 64px));margin-inline:auto}
   .site-header{background:#fffefa;border-top:4px solid var(--forest);border-bottom:1px solid var(--line)}
-  .header-inner{min-height:104px;padding-block:16px;display:flex;align-items:center;justify-content:space-between;gap:20px}
+  .header-inner{min-height:128px;padding-block:16px;display:flex;align-items:center;justify-content:space-between;gap:20px}
   .brand{display:flex;align-items:center;gap:18px;border:0;padding:0;background:none;color:var(--forest);text-align:left;text-decoration:none}
   .site-logo{display:block;width:120px;height:120px;flex-shrink:0;object-fit:contain;border-radius:12px}
   .brand-mark{width:46px;height:48px;display:grid;place-items:center;border-radius:10px;background:var(--forest);color:#f1f5ed;border:1px solid #264c3e}
   .brand-mark svg{width:30px;height:30px}
-  .brand-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
-  .brand-copy strong{font-family:"Segoe UI",sans-serif;font-size:1.625rem;letter-spacing:.035em}
-  .brand-copy strong span{font-size:1rem;letter-spacing:.1em;font-weight:600;margin-left:9px}
-  .brand-caption{font-size:1rem;color:var(--muted)}
+  .brand-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+  .brand-copy strong{font-family:"Noto Sans Thai","Sarabun","Segoe UI",sans-serif;font-size:2rem;letter-spacing:.03em;line-height:1.2;font-weight:700}
+  .brand-copy strong span{font-size:1.125rem;letter-spacing:.12em;font-weight:600;margin-left:10px;opacity:.85}
+  .brand-caption{font-size:1.05rem;color:var(--muted);font-weight:400;letter-spacing:.01em;line-height:1.5}
   .header-year{font-size:1rem;color:var(--muted);padding:5px 0 5px 22px;border-left:1px solid var(--line)}
   .header-year strong{font-size:1.25rem;color:var(--forest);margin-left:7px}
   .main-content{padding-top:28px}
@@ -211,8 +212,8 @@
     .site-logo{width:88px;height:88px}
     .brand-mark{width:36px;height:40px;border-radius:8px;flex-shrink:0}
     .brand-mark svg{width:26px;height:26px}
-    .brand-copy strong{font-size:1.375rem}
-    .brand-copy strong span{display:block;font-size:1rem;margin-left:0;letter-spacing:.04em}
+    .brand-copy strong{font-size:1.5rem}
+    .brand-copy strong span{display:block;font-size:1rem;margin-left:0;letter-spacing:.06em}
     .brand-caption{display:none}
     .page-navigation{align-items:stretch;flex-direction:column;margin-top:15px}
     #copyPageButton{align-self:flex-start}
