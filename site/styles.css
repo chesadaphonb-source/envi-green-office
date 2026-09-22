@@ -14,7 +14,7 @@
   .site-header{background:#fffefa;border-top:4px solid var(--forest);border-bottom:1px solid var(--line)}
   .header-inner{min-height:104px;padding-block:16px;display:flex;align-items:center;justify-content:space-between;gap:20px}
   .brand{display:flex;align-items:center;gap:18px;border:0;padding:0;background:none;color:var(--forest);text-align:left;text-decoration:none}
-  .site-logo{display:block;width:96px;height:96px;flex-shrink:0;object-fit:contain;border-radius:12px}
+  .site-logo{display:block;width:120px;height:120px;flex-shrink:0;object-fit:contain;border-radius:12px}
   .brand-mark{width:46px;height:48px;display:grid;place-items:center;border-radius:10px;background:var(--forest);color:#f1f5ed;border:1px solid #264c3e}
   .brand-mark svg{width:30px;height:30px}
   .brand-copy{display:flex;flex-direction:column;gap:2px;min-width:0}
@@ -208,7 +208,7 @@
     .container{width:calc(100% - 28px)}
     .header-inner{min-height:104px;flex-wrap:wrap;gap:12px;padding-block:16px}
     .brand{gap:12px;min-width:0;flex-basis:100%}
-    .site-logo{width:76px;height:76px}
+    .site-logo{width:88px;height:88px}
     .brand-mark{width:36px;height:40px;border-radius:8px;flex-shrink:0}
     .brand-mark svg{width:26px;height:26px}
     .brand-copy strong{font-size:1.375rem}
