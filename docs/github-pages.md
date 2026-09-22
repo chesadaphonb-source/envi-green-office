@@ -51,7 +51,7 @@ Deploy โปรเจกต์จัดทำสารบัญเป็น Web
 
 ต้องมี repository ในบัญชีหรือองค์กร GitHub ของผู้ดูแลก่อน โค้ดพร้อมให้เชื่อม repository แต่ไม่มีการสร้าง repository หรือเผยแพร่ให้อัตโนมัติจากคู่มือนี้ ตรวจไฟล์ที่จะ commit ให้แน่ใจว่าไม่มี `.env`, `.clasprc.json`, `.local/`, `dist/` หรือ `catalog-sync/.clasp.json` ติดไปด้วย
 
-1. นำโค้ดเข้า repository ที่เลือก และเลือก default branch เป็น `main` หรือ `master`
+1. นำโค้ดเข้า repository ที่เลือก ใช้ default branch `main` สำหรับ PRD และสร้าง branch `sit` สำหรับทดลองฟังก์ชันใหม่ ตาม [คู่มือ SIT และ PRD](environments.md)
 2. ใน repository ไปที่ **Settings → Pages → Build and deployment → Source: GitHub Actions**
 3. ไปที่ **Settings → Secrets and variables → Actions → Secrets** เพิ่ม repository secrets:
 
@@ -61,7 +61,7 @@ Deploy โปรเจกต์จัดทำสารบัญเป็น Web
    | `CATALOG_EXPORT_TOKEN` | ค่าเดียวกับ Script Property |
 
 4. ในแท็บ **Variables** เพิ่ม `PAGES_PUBLISH_ENABLED` เป็น `true` เมื่อพร้อมให้ metadata ในสารบัญเป็นสาธารณะ ก่อนตั้งค่านี้ workflow จะข้ามการเผยแพร่
-5. ตรวจ Environment `github-pages` ให้ deploy ได้เฉพาะ default branch ที่เลือก จากนั้นเปิด **Actions → Publish Green Office → Run workflow** โดยเลือก default branch
+5. ตรวจ Environment `github-pages` ให้ deploy ได้จาก `main` และ `sit` จากนั้นเปิด **Actions → Publish Green Office → Run workflow** โดยเลือก `main` ทั้งสอง branch ใช้ workflow สร้าง PRD จาก `main` และ `/sit/` จาก `sit` ในการเผยแพร่ครั้งเดียว
 6. เมื่อ job `deploy` สำเร็จ ใช้ลิงก์จาก Environment หรือ Settings → Pages เป็นลิงก์เว็บไซต์ใหม่ ตรวจหน้าแรก หมวด โฟลเดอร์ การค้นหา PDF รูปหลายใบ และปุ่มย้อนกลับก่อนเปลี่ยนลิงก์ที่แจกผู้ใช้
 
 workflow ทดสอบโค้ดทุกครั้งที่ push แม้ยังไม่เปิดเผยแพร่เว็บ เมื่อเปิดเผยแพร่แล้วจึงดึงสารบัญ สร้างเฉพาะไฟล์หน้าเว็บที่อนุญาต และอัปโหลดเฉพาะ `dist/` ส่วน Apps Script, credentials, Sheet และไฟล์สำรองไม่อยู่ในเว็บไซต์ที่เผยแพร่ ขั้น checks และ build ใช้ `contents: read` ส่วนขั้น deploy ใช้ `pages: write` กับ `id-token: write` [การใช้ GitHub Actions กับ Pages](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)
