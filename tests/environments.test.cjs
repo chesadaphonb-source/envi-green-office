@@ -8,6 +8,7 @@ const { buildEnvironments } = require('../scripts/build-environments.cjs');
 const project = path.resolve(__dirname, '..');
 
 test('SIT and PRD use independent frontend files, with a test banner only in SIT and no private files', async t => {
+  await fs.mkdir(path.join(project, '.local'), { recursive: true });
   const root = await fs.mkdtemp(path.join(project, '.local/env-test-'));
   t.after(() => fs.rm(root, { recursive: true, force: true }));
   const sitRoot = path.join(root, '.local/sit-source');
