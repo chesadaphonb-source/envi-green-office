@@ -2,12 +2,12 @@
   *{box-sizing:border-box}
   [hidden]{display:none!important}
   body{margin:0;background:radial-gradient(ellipse at 0 240px,#dfefda 0,transparent 650px),radial-gradient(ellipse at 100% 620px,#faf0d5 0,transparent 650px),var(--paper);color:var(--ink);font-family:"Leelawadee UI",Tahoma,"Noto Sans Thai",sans-serif;font-size:1.125rem;line-height:1.8;-webkit-font-smoothing:antialiased}
-  button,input{font:inherit}
+  button,input,select{font:inherit}
   button,a,input{-webkit-tap-highlight-color:transparent}
   button{cursor:pointer}
   button:disabled{cursor:default}
   button:disabled{opacity:.45}
-  button:focus-visible,a:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid #527966;outline-offset:4px}
+  button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,[tabindex]:focus-visible{outline:3px solid #527966;outline-offset:4px}
   a{color:var(--green)}
   svg{display:block}
   .container{width:min(1240px,calc(100% - 64px));margin-inline:auto}
@@ -380,3 +380,9 @@
   }
   @media print{.sidebar,.search-section,.page-navigation{display:none}.app-layout{display:block}.container{width:100%}}
   .energy-chart-area{min-height:clamp(280px,42vh,480px);background:var(--white);border:1px solid var(--line);border-radius:16px}
+  .listing-controls{display:flex;flex-wrap:wrap;align-items:end;gap:16px;padding:20px;margin:20px 0;background:#fff;border:1px solid var(--line);border-radius:14px}
+  .listing-control{display:flex;flex:1 1 220px;min-width:0;flex-direction:column;gap:6px}
+  .listing-control label{font-weight:600;color:var(--ink)}
+  .listing-control select{width:100%;min-height:48px;padding:9px 12px;color:var(--ink);background:#fff;border:1px solid #80988d;border-radius:8px}
+  .listing-stats,.listing-updated{flex-basis:100%;margin:0;overflow-wrap:anywhere;font-size:1rem;color:var(--muted)}
+  .listing-updated:empty,.listing-stats:empty{display:none}

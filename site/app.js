@@ -3,6 +3,7 @@
 
   const state = { view: 'dashboard', folderId: null, query: '', token: null, items: [], request: 0, busy: false, selectedId: null, expanded: false };
   const galleryCards = new Map();
+  const listingOptions = { type: 'all', sort: 'name' };
   let appUrl = '';
   let catalogClient;
   let currentRoute = null;
@@ -82,6 +83,12 @@
 
   function commitRoute(route, mode) {
     const changed = JSON.stringify(route) !== JSON.stringify(currentRoute);
+    if (changed) {
+      listingOptions.type = 'all';
+      listingOptions.sort = 'name';
+      byId('fileTypeFilter').value = 'all';
+      byId('fileSort').value = 'name';
+    }
     currentRoute = route;
     byId('sharePanel').hidden = true;
     byId('shareUrl').value = routeUrl(route);
@@ -137,6 +144,9 @@
     byId('refreshButton').disabled = busy;
     byId('retryButton').disabled = busy;
     byId('loadMoreButton').disabled = busy;
+    byId('fileTypeFilter').disabled = busy;
+    byId('fileSort').disabled = busy;
+    byId('resetFilters').disabled = busy;
   }
 
   function showError(error) {
@@ -216,6 +226,9 @@
     byId('energyChartArea').hidden = !dashboard;
     byId('viewDescription').hidden = dashboard;
     byId('browserPanel').hidden = dashboard;
+    byId('listingControls').hidden = !['folder', 'search'].includes(view);
+    byId('listingStats').textContent = '';
+    byId('listingUpdated').textContent = '';
     byId('fileList').textContent = '';
     byId('fileTableWrap').hidden = true;
     byId('emptyPanel').hidden = true;
@@ -454,7 +467,7 @@
     const searching = state.view === 'search';
     const token = append ? state.token : null;
     if (append && (state.busy || !token)) return;
-    request(searching ? 'searchDrive' : 'getFolderContents', [searching ? state.query : state.folderId, token], function (data) {
+    request(searching ? 'searchDrive' : 'getFolderContents', [searching ? state.query : state.folderId, token, { ...listingOptions }], function (data) {
       if (!searching) {
         byId('workspace').setAttribute('data-category', data.folder.categoryNumber || '');
       setCategoryContext(data.folder.categoryNumber, data.breadcrumbs);
@@ -476,17 +489,42 @@
       state.items.push(...added);
       state.token = data.nextPageToken || null;
       renderLibrary();
+      if (listingOptions.type === 'word') {
+        byId('wordList').hidden = false;
+        byId('wordToggle').setAttribute('aria-expanded', 'true');
+        byId('wordToggle').textContent = '− ซ่อนไฟล์ Word (' + state.items.filter(isWord).length + ')';
+      }
+      if (data.counts) {
+        const labels = { folder: 'โฟลเดอร์', pdf: 'PDF', image: 'รูปภาพ', word: 'Word', other: 'ไฟล์อื่น ๆ' };
+        byId('listingStats').textContent = 'ทั้งหมด ' + data.counts.all + ' รายการใน' + (searching ? 'ผลการค้นหานี้' : 'โฟลเดอร์นี้') +
+          Object.keys(labels).filter(key => data.counts[key]).map(key => ' · ' + labels[key] + ' ' + data.counts[key]).join('');
+      }
+      byId('listingUpdated').textContent = data.latestUpdatedAt ? 'รายการทั้งหมดแก้ไขล่าสุด ' + new Intl.DateTimeFormat('th-TH', {
+        dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Bangkok'
+      }).format(new Date(data.latestUpdatedAt)) + ' น.' : '';
       const wordCount = state.items.filter(isWord).length;
       byId('resultSummary').textContent = 'แสดง ' + state.items.length +
         (Number.isInteger(data.totalItems) ? ' จาก ' + data.totalItems : '') + ' รายการ' +
-        (wordCount ? ' · ไฟล์ Word ' + wordCount + ' รายการอยู่ในส่วนแสดงเพิ่มเติม' : '');
+        (wordCount && byId('wordList').hidden ? ' · ไฟล์ Word ' + wordCount + ' รายการอยู่ในส่วนแสดงเพิ่มเติม' : '');
       byId('emptyPanel').hidden = state.items.length !== 0;
       byId('emptyTitle').textContent = state.token ? 'ยังไม่พบรายการในช่วงที่อ่านแล้ว' : (searching ? 'ไม่พบผลการค้นหา' : 'โฟลเดอร์นี้ยังว่าง');
       byId('emptyMessage').textContent = state.token ? 'กดปุ่มด้านล่างเพื่ออ่านข้อมูลต่อ' : (searching ? 'ลองใช้คำค้นหาอื่น หรือตรวจสอบชื่อเอกสาร' : 'เอกสารใหม่จะแสดงหลังจากสารบัญปรับปรุงแล้ว');
+      if (!state.items.length && listingOptions.type !== 'all') {
+        byId('emptyTitle').textContent = 'ไม่พบรายการประเภทที่เลือก';
+        byId('emptyMessage').textContent = 'เลือกประเภทอื่น หรือกดล้างตัวกรองเพื่อดูรายการทั้งหมด';
+      }
       byId('pagination').hidden = !state.token;
       byId('paginationMessage').textContent = searching ? 'ยังมีผลการค้นหาเพิ่มเติม' : 'ยังมีรายการเพิ่มเติม';
       byId('loadMoreButton').textContent = 'แสดงรายการเพิ่มเติม';
     });
+  }
+
+  function changeListing() {
+    if (state.busy || !['folder', 'search'].includes(state.view)) return;
+    listingOptions.type = byId('fileTypeFilter').value;
+    listingOptions.sort = byId('fileSort').value;
+    // Clear old previews and cursors before requesting the newly filtered collection.
+    restart();
   }
 
   function trustedUrl(value) {
@@ -619,8 +657,7 @@
     const images = galleryItems();
     const galleryIds = new Set(images.map(item => item.id));
     const libraryItems = state.items.filter(item => !galleryIds.has(item.id));
-    const rank = item => item.kind === 'folder' ? 0 : mediaType(item) === 'pdf' ? 1 : mediaType(item) === 'image' ? 2 : 3;
-    libraryItems.slice().sort((a, b) => rank(a) - rank(b)).forEach(renderItem);
+    libraryItems.forEach(renderItem);
     const wordCount = state.items.filter(isWord).length;
     byId('wordSection').hidden = wordCount === 0;
     byId('wordToggle').textContent = (byId('wordList').hidden ? '＋ แสดง' : '− ซ่อน') + 'ไฟล์ Word (' + wordCount + ')';
@@ -665,7 +702,7 @@
     const typeCell = node('span', 'type-label', label);
     const date = new Date(item.updatedAt);
     const dateCell = node('span', 'file-date', item.updatedAt && !Number.isNaN(date.getTime()) ?
-      new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Bangkok' }).format(date) : '—');
+      'แก้ไข ' + new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Bangkok' }).format(date) : '—');
     const meta = node('div', 'file-meta');
     meta.append(typeCell, dateCell);
     nameWrap.appendChild(meta);
@@ -707,6 +744,15 @@
     byId('refreshButton').addEventListener('click', refreshCatalog);
     byId('retryButton').addEventListener('click', refreshCatalog);
     byId('loadMoreButton').addEventListener('click', () => loadPage(true));
+    byId('fileTypeFilter').value = listingOptions.type;
+    byId('fileSort').value = listingOptions.sort;
+    byId('fileTypeFilter').addEventListener('change', changeListing);
+    byId('fileSort').addEventListener('change', changeListing);
+    byId('resetFilters').addEventListener('click', function () {
+      byId('fileTypeFilter').value = 'all';
+      byId('fileSort').value = 'name';
+      changeListing();
+    });
     byId('previousPreviewButton').addEventListener('click', () => stepPreview(-1));
     byId('nextPreviewButton').addEventListener('click', () => stepPreview(1));
     byId('expandPreviewButton').addEventListener('click', function () {

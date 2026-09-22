@@ -101,6 +101,45 @@ test('client fetches once for concurrent views; navigation uses in-memory index'
   assert.equal(requestOptions.cache, 'no-cache');
 });
 
+test('filters scan the full collection before pagination and newest ordering reaches later names', () => {
+  const raw = fixture();
+  for (let i = 0; i < 95; i++) raw.items.push({ ...raw.items[8], id: 'extra' + i, name: 'รายการ ' + i + '.pdf', url: 'https://drive.google.com/open?id=extra' + i,
+    updatedAt: i === 94 ? '2026-09-22T00:00:00.000Z' : raw.generatedAt });
+  raw.items.push({ ...raw.items[8], id: 'photo', name: 'รูป.jpg', mimeType: 'image/jpeg', typeLabel: 'JPG', url: 'https://drive.google.com/open?id=photo' });
+  const index = createIndex(raw);
+  const photos = index.request('getFolderContents', ['nested', null, { type: 'image', sort: 'name' }]);
+  assert.deepEqual(photos.items.map(item => item.id), ['photo']);
+  assert.equal(photos.totalItems, 1);
+  assert.equal(photos.counts.all, 97);
+  assert.equal(photos.counts.pdf, 96);
+  const first = index.request('getFolderContents', ['nested', null, { type: 'pdf', sort: 'updated' }]);
+  assert.equal(first.items[0].id, 'extra94');
+  assert.equal(first.latestUpdatedAt, '2026-09-22T00:00:00.000Z');
+  const second = index.request('getFolderContents', ['nested', first.nextPageToken, { type: 'pdf', sort: 'updated' }]);
+  assert.equal(new Set([...first.items, ...second.items].map(item => item.id)).size, 96);
+  assert.equal(second.nextPageToken, null);
+  assert.throws(() => index.request('getFolderContents', ['nested', first.nextPageToken, { type: 'image', sort: 'updated' }]), { code: 'INVALID_CURSOR' });
+  assert.throws(() => index.request('getFolderContents', ['nested', first.nextPageToken, { type: 'pdf', sort: 'name' }]), { code: 'INVALID_CURSOR' });
+});
+
+test('search counts cover all matches while the selected type filters results, including empty matches', () => {
+  const raw = fixture();
+  for (const [id, mimeType, typeLabel, name] of [['word', 'application/msword', 'Word', 'เอกสาร.doc'], ['image', 'image/png', 'PNG', 'เอกสาร.png'], ['sheet', 'application/vnd.google-apps.spreadsheet', 'Sheets', 'เอกสารอื่น']]) {
+    raw.items.push({ ...raw.items[8], id, mimeType, typeLabel, name, url: 'https://drive.google.com/open?id=' + id });
+  }
+  const index = createIndex(raw);
+  const words = index.request('searchDrive', ['เอกสาร', null, { type: 'word', sort: 'type' }]);
+  assert.deepEqual(words.items.map(item => item.id), ['word']);
+  assert.equal(words.counts.all, 3);
+  assert.equal(words.counts.other, 1);
+  assert.equal(words.counts.word, 1);
+  const empty = index.request('searchDrive', ['เอกสาร', null, { type: 'pdf' }]);
+  assert.equal(empty.totalItems, 0);
+  assert.equal(empty.counts.all, 3);
+  assert.equal(empty.complete, true);
+  assert.throws(() => index.request('searchDrive', ['เอกสาร', null, { type: 'unknown' }]), { code: 'INVALID_FILTER' });
+});
+
 test('refresh replaces snapshot only after validation; failure preserves last good index', async () => {
   let payload = fixture();
   const client = createClient({ url: 'catalog.json', fetch: async () => ({ ok: true, json: async () => payload }) });

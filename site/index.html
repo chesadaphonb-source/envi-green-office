@@ -88,6 +88,13 @@
       <div id="energyChartArea" class="energy-chart-area" aria-hidden="true"></div>
 
       <div id="browserPanel" hidden>
+        <section id="listingControls" class="listing-controls" aria-label="กรองและเรียงรายการเอกสาร" hidden>
+          <div class="listing-control"><label for="fileTypeFilter">แสดงประเภท</label><select id="fileTypeFilter"><option value="all">ทั้งหมด</option><option value="folder">โฟลเดอร์</option><option value="pdf">PDF</option><option value="image">รูปภาพ</option><option value="word">Word</option><option value="other">ไฟล์อื่น ๆ</option></select></div>
+          <div class="listing-control"><label for="fileSort">เรียงรายการ</label><select id="fileSort"><option value="name">ชื่อ ก–ฮ / A–Z (โฟลเดอร์ก่อน)</option><option value="updated">วันที่แก้ไขล่าสุด</option><option value="type">ประเภทไฟล์</option></select></div>
+          <button id="resetFilters" class="button button-outline" type="button">ล้างตัวกรอง</button>
+          <p id="listingStats" class="listing-stats" role="status"></p>
+          <p id="listingUpdated" class="listing-updated"></p>
+        </section>
         <div id="resultSummary" class="result-summary" role="status"></div>
         <div id="documentLayout" class="document-layout">
           <div id="fileTableWrap" class="document-library" hidden>

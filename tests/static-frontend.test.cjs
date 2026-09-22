@@ -130,6 +130,55 @@ test('static shell uses supplied image URLs and no templating or runtime Apps Sc
   assert.ok(html.indexOf('src="catalog.js"') < html.indexOf('src="app.js"'));
 });
 
+test('SIT filters replace stale previews, expose selected Word files and reset when navigating to another folder', async () => {
+  const page = client({ url: 'https://envi.example/repo/sit/?folder=nested-folder', realCatalog: true });
+  const data = snapshot();
+  data.items.push(item({ id: 'word-1', name: 'บันทึก.docx', mimeType: 'application/msword', typeLabel: 'Word', categoryNumber: 1, parentId: 'nested-folder', url: 'https://drive.google.com/open?id=word-1' }));
+  await respondCatalog(page, data);
+  assert.equal(page.catalogUrl, 'https://envi.example/repo/sit/data/catalog.json');
+  assert.equal(page.element('listingControls').hidden, false);
+  assert.match(page.element('listingStats').textContent, /ทั้งหมด 2/);
+  assert.match(page.element('listingUpdated').textContent, /แก้ไขล่าสุด/);
+  assert.equal(page.element('previewPanel').hidden, false);
+  page.element('fileTypeFilter').value = 'word';
+  page.element('fileTypeFilter').dispatch('change');
+  await page.flush();
+  assert.equal(page.element('previewPanel').hidden, true);
+  assert.equal(page.element('previewFrameWrap').children.length, 0);
+  assert.equal(page.element('wordList').hidden, false);
+  assert.equal(page.element('wordList').children.length, 1);
+  assert.equal(page.element('parentLink').hidden, false);
+  assert.equal(page.fetches.length, 0);
+  page.element('resetFilters').click();
+  await page.flush();
+  assert.equal(page.element('fileTypeFilter').value, 'all');
+  assert.equal(page.element('wordList').hidden, true);
+  page.element('fileSort').value = 'updated';
+  page.element('fileSort').dispatch('change');
+  await page.flush();
+  page.element('parentLink').click();
+  await page.flush();
+  assert.equal(page.element('fileSort').value, 'name');
+  assert.equal(page.window.location.pathname, '/repo/sit/');
+});
+
+test('filtered empty search remains recoverable and preserves search breadcrumb and parent link', async () => {
+  const page = client({ url: 'https://envi.example/repo/sit/?q=' + encodeURIComponent('หลักฐาน.pdf'), realCatalog: true });
+  await respondCatalog(page);
+  page.element('fileTypeFilter').value = 'image';
+  page.element('fileTypeFilter').dispatch('change');
+  await page.flush();
+  assert.equal(page.element('emptyPanel').hidden, false);
+  assert.match(page.element('emptyTitle').textContent, /ประเภทที่เลือก/);
+  assert.equal(page.element('parentLink').hidden, false);
+  assert.ok(page.element('breadcrumbs').children.length);
+  assert.match(page.element('listingStats').textContent, /ทั้งหมด 1/);
+  page.element('resetFilters').click();
+  await page.flush();
+  assert.equal(page.element('emptyPanel').hidden, true);
+  assert.equal(page.element('previewPanel').hidden, false);
+});
+
 test('homepage preserves blank energy area and uses repo-relative data and native links', async () => {
   const page = await boot();
   assert.equal(page.catalogUrl, 'https://envi.example/green-office/data/catalog.json');
