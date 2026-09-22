@@ -137,7 +137,7 @@ test('layout preview has no real or invented catalog and works under a repositor
   t.after(() => new Promise(resolve => server.close(resolve)));
   const origin = 'http://127.0.0.1:' + server.address().port;
   assert.equal((await fetch(origin + '/green-office-envi/?folder=category_1')).status, 200);
-  assert.equal((await fetch(origin + '/green-office-envi/assets/images/KU%20copy.jpg')).status, 200);
+  assert.equal((await fetch(origin + '/green-office-envi/assets/images/logo.png')).status, 200);
   assert.equal((await fetch(origin + '/green-office-envi/data/catalog.json')).status, 404);
   assert.equal((await fetch(origin + '/green-office-envi/.clasprc.json')).status, 404);
   assert.equal((await fetch(origin + '/green-office-envi/%2e%2e%2f.env')).status, 404);

@@ -10,7 +10,7 @@ const FILES = [
   ['site/styles.css', 'styles.css'],
   ['site/app.js', 'app.js'],
   ['site/catalog.js', 'catalog.js'],
-  ['assets/images/KU copy.jpg', 'assets/images/KU copy.jpg'],
+  ['assets/images/logo.png', 'assets/images/logo.png'],
   ['assets/images/green-office-building.png', 'assets/images/green-office-building.png']
 ];
 

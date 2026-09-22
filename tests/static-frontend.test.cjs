@@ -126,7 +126,7 @@ test('static shell uses supplied image URLs and no templating or runtime Apps Sc
   assert.doesNotMatch(html, /\?{3,}|<body>"/);
   assert.match(html, /<title>Green Office คณะสิ่งแวดล้อม \| 2569<\/title>/);
   assert.match(html, /src="assets\/images\/green-office-building\.png"/);
-  assert.match(html, /src="assets\/images\/KU copy\.jpg"/);
+  assert.match(html, /src="assets\/images\/logo\.png"/);
   assert.ok(html.indexOf('src="catalog.js"') < html.indexOf('src="app.js"'));
 });
 
