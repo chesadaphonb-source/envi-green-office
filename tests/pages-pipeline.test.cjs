@@ -4,7 +4,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
-const { checkedEndpoint, fetchCatalog, writeCatalog, MAX_BYTES } = require('../scripts/fetch-catalog.cjs');
+const { checkedEndpoint, fetchCatalog, fetchCatalogWithRetry, writeCatalog, MAX_BYTES } = require('../scripts/fetch-catalog.cjs');
 const { buildSite, FILES } = require('../scripts/build-site.cjs');
 const { createPreviewServer } = require('../scripts/serve-site.cjs');
 
@@ -71,6 +71,32 @@ test('export deadline aborts an unresponsive server', async () => {
   await assert.rejects(fetchCatalog(requestOptions({ timeoutMs: 5, fetchImpl: async (_url, { signal }) => new Promise((_resolve, reject) => {
     signal.addEventListener('abort', () => reject(signal.reason), { once: true });
   }) })), /timed out/);
+});
+
+test('a transient Google redirect is retried at the canonical endpoint without following the rejected destination', async () => {
+  const calls = [];
+  const result = await fetchCatalogWithRetry(requestOptions({ fetchImpl: async (url, options) => {
+    calls.push({ url, method: options.method, body: options.body });
+    if (calls.length === 1) return new Response(null, { status: 302, headers: { Location: 'https://script.googleusercontent.com/macros/echo?user_content_key=temporary' } });
+    if (calls.length === 2) return new Response(null, { status: 302, headers: { Location: 'https://script.google.com/error' } });
+    return jsonResponse(FRESH);
+  } }), { delay: async () => {} });
+  assert.deepEqual(result, FRESH);
+  assert.deepEqual(calls.map(call => call.url), [ENDPOINT, 'https://script.googleusercontent.com/macros/echo?user_content_key=temporary', ENDPOINT]);
+  assert.equal(calls[1].body, undefined);
+  assert.deepEqual(JSON.parse(calls[2].body), { token: TOKEN });
+});
+
+test('persistent export failures stop after three attempts and preserve the last good catalog', async t => {
+  const destination = path.join(await temporary(t), 'catalog.json');
+  await writeCatalog({ old: 'retained' }, destination);
+  let calls = 0;
+  await assert.rejects(fetchCatalogWithRetry(requestOptions({ fetchImpl: async () => {
+    calls++;
+    return new Response('Service unavailable', { status: 503 });
+  } }), { delay: async () => {} }).then(snapshot => writeCatalog(snapshot, destination)));
+  assert.equal(calls, 3);
+  assert.deepEqual(JSON.parse(await fs.readFile(destination, 'utf8')), { old: 'retained' });
 });
 
 test('production output contains only the allowlisted frontend, assets and validated catalog', async t => {

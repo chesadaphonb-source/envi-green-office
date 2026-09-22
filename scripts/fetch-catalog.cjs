@@ -120,8 +120,21 @@ async function writeCatalog(snapshot, destination) {
   }
 }
 
+async function fetchCatalogWithRetry(options = {}, { attempts = 3, delay = ms => new Promise(resolve => setTimeout(resolve, ms)) } = {}) {
+  // Google can briefly return an error or an unexpected redirect after deployment.
+  // Start a fresh request at the canonical endpoint; never relax redirect validation.
+  checkedEndpoint(options.url);
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try { return await fetchCatalog(options); }
+    catch (error) {
+      if (attempt === attempts) throw error;
+      await delay(attempt * 2000);
+    }
+  }
+}
+
 async function main() {
-  const snapshot = await fetchCatalog({ url: process.env.CATALOG_EXPORT_URL, token: process.env.CATALOG_EXPORT_TOKEN });
+  const snapshot = await fetchCatalogWithRetry({ url: process.env.CATALOG_EXPORT_URL, token: process.env.CATALOG_EXPORT_TOKEN });
   await writeCatalog(snapshot, path.resolve(__dirname, '../.local/catalog.json'));
   console.log('Validated catalog saved locally. Snapshot: ' + snapshot.generatedAt);
 }
@@ -132,4 +145,4 @@ if (require.main === module) main().catch(error => {
   process.exitCode = 1;
 });
 
-module.exports = { checkedEndpoint, checkedRedirect, checkedFreshness, fetchCatalog, writeCatalog, MAX_BYTES };
+module.exports = { checkedEndpoint, checkedRedirect, checkedFreshness, fetchCatalog, fetchCatalogWithRetry, writeCatalog, MAX_BYTES };
