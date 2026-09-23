@@ -11,6 +11,7 @@ const FILES = [
   ['site/app.js', 'app.js'],
   ['site/catalog.js', 'catalog.js'],
   ['assets/images/logo.png', 'assets/images/logo.png'],
+  ['assets/images/data1.png', 'assets/images/data1.png'],
   ['assets/images/green-office-building.png', 'assets/images/green-office-building.png']
 ];
 

@@ -427,5 +427,12 @@
   .pending-label{display:inline-block;font-size:1rem;color:#52624c;background:#f0f5ec;border-radius:6px;padding:4px 10px;margin-bottom:16px}
   .preparation-card p{font-size:1rem;margin-bottom:0;color:var(--muted)}
   .story-reviewed{font-size:1rem;color:var(--muted)}
+  .award-image{margin:0;padding:clamp(16px,3vw,28px);background:#fff;border:1px solid var(--line);border-radius:18px}
+  .award-image>a{display:block;max-width:1022px;margin-inline:auto;border-radius:10px}
+  .award-image img{display:block;width:100%;height:auto;border-radius:10px}
+  .award-image figcaption{display:flex;flex-direction:column;gap:6px;margin-top:20px;line-height:1.8}
+  .award-image figcaption strong{font-size:1.25rem;color:var(--forest)}
+  .award-image figcaption span{font-size:1rem;color:var(--muted)}
+  .award-image-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:16px}
   @media(max-width:1200px){.story-intro{grid-template-columns:minmax(0,1fr)}.story-intro figure{max-width:600px}.story-achievement{flex-wrap:wrap}.preparation-grid{grid-template-columns:minmax(0,1fr)}.achievement-score{margin-left:auto}}
   @media(max-width:600px){.about-teaser{align-items:stretch;flex-direction:column;padding:20px}.story-intro,.story-section,.story-achievement{padding:22px}.about-page h3{font-size:1.5rem}.story-timeline li{grid-template-columns:minmax(0,1fr);gap:8px;padding-left:22px}.achievement-year{border:0;padding:0;text-align:left}.achievement-score{margin-left:0}.story-achievement{align-items:flex-start;flex-direction:column}.about-page{gap:18px}}
