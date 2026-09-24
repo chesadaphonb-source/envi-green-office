@@ -344,7 +344,7 @@ test('refresh waits for fresh catalog before reloading route and menu; failed re
   assert.equal(page.refreshes.length, 1);
 });
 
-test('vertical image gallery, PDF and collapsed Word remain available together', async () => {
+test('thumbnail gallery, PDF and collapsed Word remain available together', async () => {
   const page = client({ url: 'https://envi.example/repo/?folder=category-1' });
   const images = [1, 2].map(i => item({ id: 'img-' + i, name: i + '.png', mimeType: 'image/png', typeLabel: 'PNG' }));
   page.next('getFolderContents').success(folder([item(), ...images, item({ id: 'word-1', name: 'ต้นฉบับ.docx', typeLabel: 'Word' })]));
@@ -353,13 +353,67 @@ test('vertical image gallery, PDF and collapsed Word remain available together',
   assert.equal(page.element('previewPanel').hidden, false);
   assert.equal(page.element('imageGallery').hidden, false);
   assert.equal(page.element('imageGalleryList').children.length, 2);
-  const frames = page.element('imageGalleryList').querySelectorAll('iframe');
-  assert.equal(frames.length, 2);
-  assert.ok(frames.every(frame => frame.getAttribute('loading') === 'lazy'));
+  const thumbnails = page.element('imageGalleryList').querySelectorAll('img');
+  assert.equal(thumbnails.length, 2);
+  assert.equal(page.element('imageGalleryList').querySelectorAll('iframe').length, 0);
+  assert.ok(thumbnails.every(image => image.getAttribute('loading') === 'lazy'));
+  const source = new URL(thumbnails[0].src);
+  assert.equal(source.origin, 'https://drive.google.com');
+  assert.equal(source.pathname, '/thumbnail');
+  assert.equal(source.searchParams.get('id'), 'img-1');
+  assert.equal(source.searchParams.get('resourcekey'), 'resource-key');
   assert.equal(page.element('wordSection').hidden, false);
   assert.equal(page.element('wordList').hidden, true);
   page.element('wordToggle').click();
   assert.equal(page.element('wordList').hidden, false);
+});
+
+test('failed thumbnails still open the full image on SIT and support browser back', async () => {
+  const page = client({ url: 'https://envi.example/repo/sit/?folder=category-1' });
+  const images = [1, 2].map(i => item({ id: 'img-' + i, name: i + '.png', mimeType: 'image/png', typeLabel: 'PNG' }));
+  page.next('getFolderContents').success(folder(images));
+  page.next('getDashboardData').success(dashboard());
+  await page.flush();
+  const card = page.element('imageGalleryList').children[0];
+  const image = card.querySelector('img');
+  image.dispatch('error');
+  assert.equal(image.hidden, true);
+  assert.equal(card.querySelector('.gallery-image-fallback').hidden, false);
+  const link = card.querySelector('a');
+  assert.equal(link.href, 'https://envi.example/repo/sit/?file=img-1');
+  assert.equal(card.querySelectorAll('a').length, 1, 'one keyboard target for the whole card');
+  link.click();
+  page.next('getFileDetails').success({ ...file(), item: images[0] });
+  await page.flush();
+  assert.equal(page.element('imageGallery').hidden, true);
+  assert.equal(page.element('previewPanel').hidden, false);
+  assert.match(page.element('previewFrameWrap').querySelector('iframe').src, /\/img-1\/preview\?resourcekey=resource-key$/);
+  page.back();
+  page.next('getFolderContents').success(folder(images));
+  await page.flush();
+  assert.equal(page.element('imageGalleryList').children.length, 2);
+  assert.equal(page.element('previewPanel').hidden, true);
+});
+
+test('appending gallery images preserves loaded cards and filtering clears them', async () => {
+  const page = client({ url: 'https://envi.example/repo/sit/?folder=category-1' });
+  const images = [1, 2, 3].map(i => item({ id: 'img-' + i, name: i + '.png', mimeType: 'image/png', typeLabel: 'PNG' }));
+  page.next('getFolderContents').success({ ...folder(images.slice(0, 2)), nextPageToken: 'more' });
+  page.next('getDashboardData').success(dashboard());
+  await page.flush();
+  const first = page.element('imageGalleryList').children[0];
+  page.element('loadMoreButton').click();
+  page.next('getFolderContents').success(folder([images[2]]));
+  await page.flush();
+  assert.equal(page.element('imageGalleryList').children.length, 3);
+  assert.equal(page.element('imageGalleryList').children[0], first);
+  page.element('fileTypeFilter').value = 'pdf';
+  page.element('fileTypeFilter').dispatch('change');
+  page.next('getFolderContents').success(folder([item()]));
+  await page.flush();
+  assert.equal(page.element('imageGallery').hidden, true);
+  assert.equal(page.element('imageGalleryList').children.length, 0);
+  assert.equal(page.element('previewPanel').hidden, false);
 });
 
 test('invalid duplicate routes do not request catalog content; missing catalog explains setup state', async () => {

@@ -607,29 +607,37 @@
 
   function renderGallery(images) {
     byId('imageGallery').hidden = images.length === 0;
-    byId('imageGallerySummary').textContent = images.length ? 'แสดงแล้ว ' + images.length + ' รูป · เลื่อนลงเพื่อดูรูปถัดไป' : '';
+    byId('imageGallerySummary').textContent = images.length ? 'แสดงแล้ว ' + images.length + ' รูป · กดที่รูปเพื่อเปิดดูขนาดใหญ่' : '';
     images.forEach(function (item, index) {
-      // Preserve existing frames when appending a page so earlier images do not reload.
+      // Keep loaded thumbnails when another page is appended.
       if (galleryCards.has(item.id)) return;
       const card = node('article', 'gallery-card');
-      const header = node('div', 'gallery-card-header');
-      const title = node('h4');
-      title.appendChild(routeLink(item.name, 'gallery-title', { file: item.id }));
-      header.append(node('span', 'gallery-number', 'รูปที่ ' + (index + 1)), title,
-        routeLink('เปิดหน้ารูปภาพ', 'button button-outline', { file: item.id }));
-      const frame = node('iframe', 'gallery-frame');
-      frame.title = 'ตัวอย่าง ' + item.name;
-      frame.setAttribute('loading', 'lazy');
-      frame.setAttribute('allow', 'fullscreen');
-      frame.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
-      frame.src = previewUrl(item);
-      const help = node('p', 'preview-help', 'หากรูปไม่แสดง ให้ตรวจสอบสิทธิ์ของไฟล์ หรือ ');
-      const original = node('a', '', 'เปิดต้นฉบับใน Drive ↗');
-      original.href = trustedUrl(item.url);
-      original.target = '_blank';
-      original.rel = 'noopener noreferrer';
-      help.appendChild(original);
-      card.append(header, frame, help);
+      const link = routeLink('', 'gallery-link', { file: item.id });
+      link.setAttribute('aria-label', 'เปิดภาพขนาดใหญ่: ' + item.name);
+      const picture = node('div', 'gallery-picture');
+      const image = node('img', 'gallery-thumbnail');
+      image.alt = ''; // The link and visible caption already name this image.
+      image.setAttribute('loading', 'lazy');
+      image.setAttribute('decoding', 'async');
+      image.setAttribute('referrerpolicy', 'no-referrer');
+      const thumbnail = new URL('https://drive.google.com/thumbnail');
+      thumbnail.searchParams.set('id', item.id);
+      thumbnail.searchParams.set('sz', 'w800');
+      const resourceKey = new URL(previewUrl(item)).searchParams.get('resourcekey');
+      if (resourceKey) thumbnail.searchParams.set('resourcekey', resourceKey);
+      const fallback = node('span', 'gallery-image-fallback', 'โหลดภาพย่อไม่สำเร็จ กดเพื่อเปิดภาพขนาดใหญ่');
+      fallback.hidden = true;
+      image.addEventListener('error', function () {
+        image.hidden = true;
+        fallback.hidden = false;
+      });
+      image.src = thumbnail.href;
+      picture.append(image, fallback);
+      const caption = node('div', 'gallery-caption');
+      caption.append(node('span', 'gallery-number', 'รูปที่ ' + (index + 1)),
+        node('h4', 'gallery-title', item.name), node('span', 'gallery-open', 'ดูภาพขนาดใหญ่ →'));
+      link.append(picture, caption);
+      card.appendChild(link);
       galleryCards.set(item.id, card);
       byId('imageGalleryList').appendChild(card);
     });
