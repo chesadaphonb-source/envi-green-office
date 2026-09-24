@@ -4,6 +4,10 @@
   const state = { view: 'dashboard', folderId: null, query: '', token: null, items: [], request: 0, busy: false, selectedId: null, expanded: false };
   const galleryCards = new Map();
   const listingOptions = { type: 'all', sort: 'name' };
+  // โฟลเดอร์/ไฟล์ที่ซ่อนชั่วคราว: ระบุชื่อที่ตรงทั้งหมด (case-sensitive) ต่อ categoryNumber
+  const HIDDEN_ITEMS = {
+    2: ['ส่งข้อมูลเพื่อให้หมวด 2 ทำประชาสัมพันธ์ ปี 69']
+  };
   let appUrl = '';
   let catalogClient;
   let currentRoute = null;
@@ -507,10 +511,12 @@
       }
       if (!append) state.items = [];
       const seen = new Set(state.items.map(item => item.kind + ':' + item.id));
+      const hiddenNames = !searching && data.folder ? (HIDDEN_ITEMS[data.folder.categoryNumber] || []) : [];
       const added = data.items.filter(function (item) {
         const key = item.kind + ':' + item.id;
         if (seen.has(key)) return false;
         seen.add(key);
+        if (hiddenNames.includes(item.name)) return false;
         return true;
       });
       state.items.push(...added);
