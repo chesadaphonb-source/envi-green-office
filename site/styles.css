@@ -275,11 +275,13 @@
   .app-layout{display:grid;grid-template-columns:248px minmax(0,1fr);gap:26px;align-items:start;margin-top:24px}
   .sidebar{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;scrollbar-width:thin;padding:20px 14px;background:var(--white);border:1px solid #cfe3e8;border-radius:18px}
   .sidebar-label{font:700 1rem "Segoe UI",sans-serif;color:#256961;letter-spacing:.09em;margin:0 12px 18px}
-  .criteria-menu{margin-top:18px;min-width:0}
-  .criteria-menu>summary{padding:12px 10px;min-height:48px;border-radius:8px;color:var(--forest);font-size:1.125rem;font-weight:700;line-height:1.7;cursor:pointer;overflow-wrap:anywhere}
-  .criteria-menu>summary::marker{color:var(--green)}
-  .criteria-menu>summary:hover{background:#edf5eb}
+  .criteria-menu{margin:0;min-width:0}
+  .criteria-menu>summary{font:inherit;line-height:1.5;cursor:pointer;list-style:none}
+  .criteria-menu>summary::-webkit-details-marker{display:none}
   .criteria-menu>summary:focus-visible{outline:3px solid #527966;outline-offset:3px}
+  .primary-menu-icon{display:inline-flex;align-items:center;justify-content:center;flex:0 0 18px;height:1.5em}
+  .primary-menu-icon+span{min-width:0;overflow-wrap:anywhere}
+  .criteria-menu[open]>summary .criteria-toggle{transform:rotate(90deg)}
   .criteria-menu .category-navigation{margin:8px 0 0 10px;padding-left:6px;border-left:2px solid var(--line)}
   .category-navigation{display:grid;gap:6px}
   .sidebar-link{display:flex;align-items:flex-start;gap:12px;min-height:52px;padding:12px;border-radius:10px;color:var(--ink);text-decoration:none;line-height:1.5;border:1px solid transparent}
@@ -358,7 +360,7 @@
     .app-layout{grid-template-columns:minmax(0,1fr);margin-top:18px}
     .sidebar{position:static;max-height:none;padding:12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
     .sidebar-label,.sidebar-note{display:none}
-    .criteria-menu{flex:1 1 100%;margin-top:4px}
+    .criteria-menu{flex:1 1 100%}
     .category-navigation{display:flex;flex-wrap:wrap;gap:6px;flex:1 1 100%}
     .sidebar-link{align-items:center;min-height:48px;padding:10px 12px}
     .sidebar-link-copy>span{display:none}.sidebar-icon{padding:0;flex-basis:20px}.sidebar-icon svg{width:20px;height:20px}
