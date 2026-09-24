@@ -34,7 +34,7 @@ test('about navigation discards pending document responses and supports browser 
   pending.success({ folder: { id: 'category-1', name: 'Old folder' }, items: [], totalItems: 0, breadcrumbs: [] });
   await page.flush();
   assert.equal(page.element('aboutPage').hidden, false);
-  assert.equal(page.element('viewTitle').textContent, 'ความเป็นมาของสำนักงานสีเขียว');
+  assert.equal(page.element('viewTitle').textContent, 'เกี่ยวกับสำนักงานสีเขียว');
   assert.equal(page.element('previewPanel').hidden, true);
   page.element('sidebarHome').click();
   page.next('getDashboardData').success(dashboard());
@@ -48,6 +48,35 @@ test('about navigation discards pending document responses and supports browser 
   assert.equal(page.element('aboutPage').hidden, false);
   page.forward();
   assert.equal(page.element('aboutPage').hidden, true);
+});
+
+test('about section shortcuts preserve history and evidence links stay inside SIT', async () => {
+  const page = client({ url: 'https://envi.example/repo/sit/?page=about' });
+  page.next('getDashboardData').success(dashboard());
+  await page.flush();
+  page.element('jumpTeam').click();
+  assert.equal(page.element('aboutTeam').focused, true);
+  assert.equal(page.historyLength, 1);
+  assert.equal(page.window.location.search, '?page=about');
+  const routes = [
+    ['aboutTeamLink', 'file', '1KTAOQguACJ6Ds41X_YZrgCVXzx0951Dv', 'getFileDetails'],
+    ['aboutGoalsLink', 'file', '1G6Ye599TUpZqgWmo-nJceeyoocG_woBf', 'getFileDetails'],
+    ['aboutTeamFolder', 'folder', '1HkaJK2F0y4eGHKBq876XuhC-nGNaW7Og', 'getFolderContents'],
+    ['aboutGoalsFolder', 'folder', '15UhQtkAUINMVNyZCsaTPoQxgiF50Mfsp', 'getFolderContents']
+  ];
+  for (const [link, kind, id, method] of routes) {
+    assert.equal(page.element(link).href, 'https://envi.example/repo/sit/?' + kind + '=' + id);
+    page.element(link).click();
+    assert.equal(page.window.location.pathname, '/repo/sit/');
+    assert.equal(page.window.location.search, '?' + kind + '=' + id);
+    const pending = page.next(method);
+    page.back();
+    pending.failure(new Error('late response'));
+    await page.flush();
+    assert.equal(page.element('aboutPage').hidden, false);
+    assert.equal(page.element('errorPanel').hidden, true);
+    assert.equal(page.window.location.search, '?page=about');
+  }
 });
 
 test('unknown or conflicting content-page routes do not silently show the homepage', () => {

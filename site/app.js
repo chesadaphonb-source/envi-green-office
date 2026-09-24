@@ -256,10 +256,10 @@
     byId('errorPanel').hidden = true;
     setBusy(false);
     byId('sectionEyebrow').textContent = 'OUR GREEN JOURNEY';
-    byId('viewTitle').textContent = 'ความเป็นมาของสำนักงานสีเขียว';
+    byId('viewTitle').textContent = 'เกี่ยวกับสำนักงานสีเขียว';
     byId('viewDescription').textContent = 'คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์';
-    byId('breadcrumbs').appendChild(node('li', '', 'ความเป็นมา'));
-    document.title = 'ความเป็นมา | Green Office ENVI';
+    byId('breadcrumbs').appendChild(node('li', '', 'เกี่ยวกับสำนักงานสีเขียว'));
+    document.title = 'เกี่ยวกับสำนักงานสีเขียว | Green Office ENVI';
     byId('viewTitle').focus({ preventScroll: true });
     loadNavigation();
   }
@@ -763,6 +763,19 @@
     setRouteLink(byId('sidebarHome'), {});
     setRouteLink(byId('sidebarAbout'), { page: 'about' });
     setRouteLink(byId('aboutTeaserLink'), { page: 'about' });
+    setRouteLink(byId('aboutGoalsLink'), { file: '1G6Ye599TUpZqgWmo-nJceeyoocG_woBf' });
+    setRouteLink(byId('aboutTeamLink'), { file: '1KTAOQguACJ6Ds41X_YZrgCVXzx0951Dv' });
+    setRouteLink(byId('aboutGoalsFolder'), { folder: '15UhQtkAUINMVNyZCsaTPoQxgiF50Mfsp' });
+    setRouteLink(byId('aboutTeamFolder'), { folder: '1HkaJK2F0y4eGHKBq876XuhC-nGNaW7Og' });
+    for (const [button, target] of Object.entries({
+      jumpOverview: 'aboutOverview', jumpPolicy: 'aboutPolicy', jumpTeam: 'aboutTeam',
+      jumpJourney: 'aboutJourney', jumpAward: 'aboutAward', jumpDocuments: 'aboutDocuments'
+    })) {
+      byId(button).addEventListener('click', function () {
+        byId(target).focus({ preventScroll: true });
+        byId(target).scrollIntoView({ behavior: 'auto', block: 'start' });
+      });
+    }
     byId('navigationRetry').addEventListener('click', loadNavigation);
     byId('skipLink').addEventListener('click', function (event) {
       event.preventDefault();
