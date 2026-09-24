@@ -3,6 +3,7 @@
 
   const state = { view: 'dashboard', folderId: null, query: '', token: null, items: [], request: 0, busy: false, selectedId: null, expanded: false };
   const galleryCards = new Map();
+  const listingOptions = { type: 'all', sort: 'name' };
   let appUrl = '';
   let catalogClient;
   let currentRoute = null;
@@ -37,11 +38,14 @@
 
   function normalizeRoute(parameters) {
     const result = {};
-    for (const key of ['folder', 'file', 'q']) {
+    for (const key of ['folder', 'file', 'q', 'page']) {
       const value = parameters && parameters[key];
       if (value === undefined || value === '') continue;
       if (typeof value !== 'string') throw new Error('ลิงก์หน้านี้ไม่ถูกต้อง กรุณากลับหน้าแรก');
-      if (key === 'q') {
+      if (key === 'page') {
+        if (value !== 'about') throw new Error('ไม่พบหน้าที่ต้องการ กรุณากลับหน้าแรก');
+        result.page = value;
+      } else if (key === 'q') {
         const query = value.trim().normalize('NFC');
         if (query.length > 120) throw new Error('คำค้นหาในลิงก์ยาวเกินไป');
         if (query) result.q = query;
@@ -82,6 +86,12 @@
 
   function commitRoute(route, mode) {
     const changed = JSON.stringify(route) !== JSON.stringify(currentRoute);
+    if (changed) {
+      listingOptions.type = 'all';
+      listingOptions.sort = 'name';
+      byId('fileTypeFilter').value = 'all';
+      byId('fileSort').value = 'name';
+    }
     currentRoute = route;
     byId('sharePanel').hidden = true;
     byId('shareUrl').value = routeUrl(route);
@@ -94,7 +104,8 @@
   function navigate(parameters, mode) {
     try {
       const route = normalizeRoute(parameters);
-      if (route.file) openFile(route.file, mode);
+      if (route.page === 'about') showAbout(mode);
+      else if (route.file) openFile(route.file, mode);
       else if (route.folder) openFolder(route.folder, mode);
       else if (route.q) search(route.q, mode);
       else loadDashboard(mode);
@@ -137,6 +148,9 @@
     byId('refreshButton').disabled = busy;
     byId('retryButton').disabled = busy;
     byId('loadMoreButton').disabled = busy;
+    byId('fileTypeFilter').disabled = busy;
+    byId('fileSort').disabled = busy;
+    byId('resetFilters').disabled = busy;
   }
 
   function showError(error) {
@@ -212,10 +226,17 @@
     byId('documentLayout').classList.remove('single-document');
     byId('filePageLink').hidden = view === 'file';
     const dashboard = view === 'dashboard';
+    const about = view === 'about';
+    byId('aboutPage').hidden = !about;
+    byId('aboutTeaser').hidden = !dashboard;
+    byId('refreshButton').hidden = about;
     byId('dashboardHero').hidden = !dashboard;
     byId('energyChartArea').hidden = !dashboard;
     byId('viewDescription').hidden = dashboard;
-    byId('browserPanel').hidden = dashboard;
+    byId('browserPanel').hidden = dashboard || about;
+    byId('listingControls').hidden = !['folder', 'search'].includes(view);
+    byId('listingStats').textContent = '';
+    byId('listingUpdated').textContent = '';
     byId('fileList').textContent = '';
     byId('fileTableWrap').hidden = true;
     byId('emptyPanel').hidden = true;
@@ -225,6 +246,22 @@
     byId('sectionEyebrow').textContent = dashboard ? 'ENERGY OVERVIEW' : 'DOCUMENT LIBRARY';
     renderBreadcrumbs([]);
     byId('breadcrumbNav').hidden = dashboard;
+  }
+
+  function showAbout(mode) {
+    ++state.request; // A slow document response must not replace this static page.
+    commitRoute({ page: 'about' }, mode);
+    prepareView('about');
+    byId('searchInput').value = '';
+    byId('errorPanel').hidden = true;
+    setBusy(false);
+    byId('sectionEyebrow').textContent = 'OUR GREEN JOURNEY';
+    byId('viewTitle').textContent = 'ความเป็นมาของสำนักงานสีเขียว';
+    byId('viewDescription').textContent = 'คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์';
+    byId('breadcrumbs').appendChild(node('li', '', 'ความเป็นมา'));
+    document.title = 'ความเป็นมา | Green Office ENVI';
+    byId('viewTitle').focus({ preventScroll: true });
+    loadNavigation();
   }
 
   function loadDashboard(mode) {
@@ -296,7 +333,9 @@
 
   function updateNavigation() {
     byId('sidebarHome').removeAttribute('aria-current');
+    byId('sidebarAbout').removeAttribute('aria-current');
     if (state.view === 'dashboard') byId('sidebarHome').setAttribute('aria-current', 'page');
+    if (state.view === 'about') byId('sidebarAbout').setAttribute('aria-current', 'page');
     Array.from(byId('categoryNavigation').children).forEach(function (link) {
       link.removeAttribute('aria-current');
       if (activeCategory && link.getAttribute('data-category') === String(activeCategory)) {
@@ -421,7 +460,8 @@
   }
 
   function restart() {
-    if (state.view === 'folder') openFolder(state.folderId, 'none');
+    if (state.view === 'about') showAbout('none');
+    else if (state.view === 'folder') openFolder(state.folderId, 'none');
     else if (state.view === 'search') search(state.query, 'none');
     else if (state.view === 'file') openFile(currentRoute.file, 'none');
     else loadDashboard(state.view === 'invalid' ? 'replace' : 'none');
@@ -454,7 +494,7 @@
     const searching = state.view === 'search';
     const token = append ? state.token : null;
     if (append && (state.busy || !token)) return;
-    request(searching ? 'searchDrive' : 'getFolderContents', [searching ? state.query : state.folderId, token], function (data) {
+    request(searching ? 'searchDrive' : 'getFolderContents', [searching ? state.query : state.folderId, token, { ...listingOptions }], function (data) {
       if (!searching) {
         byId('workspace').setAttribute('data-category', data.folder.categoryNumber || '');
       setCategoryContext(data.folder.categoryNumber, data.breadcrumbs);
@@ -476,17 +516,42 @@
       state.items.push(...added);
       state.token = data.nextPageToken || null;
       renderLibrary();
+      if (listingOptions.type === 'word') {
+        byId('wordList').hidden = false;
+        byId('wordToggle').setAttribute('aria-expanded', 'true');
+        byId('wordToggle').textContent = '− ซ่อนไฟล์ Word (' + state.items.filter(isWord).length + ')';
+      }
+      if (data.counts) {
+        const labels = { folder: 'โฟลเดอร์', pdf: 'PDF', image: 'รูปภาพ', word: 'Word', other: 'ไฟล์อื่น ๆ' };
+        byId('listingStats').textContent = 'ทั้งหมด ' + data.counts.all + ' รายการใน' + (searching ? 'ผลการค้นหานี้' : 'โฟลเดอร์นี้') +
+          Object.keys(labels).filter(key => data.counts[key]).map(key => ' · ' + labels[key] + ' ' + data.counts[key]).join('');
+      }
+      byId('listingUpdated').textContent = data.latestUpdatedAt ? 'รายการทั้งหมดแก้ไขล่าสุด ' + new Intl.DateTimeFormat('th-TH', {
+        dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Bangkok'
+      }).format(new Date(data.latestUpdatedAt)) + ' น.' : '';
       const wordCount = state.items.filter(isWord).length;
       byId('resultSummary').textContent = 'แสดง ' + state.items.length +
         (Number.isInteger(data.totalItems) ? ' จาก ' + data.totalItems : '') + ' รายการ' +
-        (wordCount ? ' · ไฟล์ Word ' + wordCount + ' รายการอยู่ในส่วนแสดงเพิ่มเติม' : '');
+        (wordCount && byId('wordList').hidden ? ' · ไฟล์ Word ' + wordCount + ' รายการอยู่ในส่วนแสดงเพิ่มเติม' : '');
       byId('emptyPanel').hidden = state.items.length !== 0;
       byId('emptyTitle').textContent = state.token ? 'ยังไม่พบรายการในช่วงที่อ่านแล้ว' : (searching ? 'ไม่พบผลการค้นหา' : 'โฟลเดอร์นี้ยังว่าง');
       byId('emptyMessage').textContent = state.token ? 'กดปุ่มด้านล่างเพื่ออ่านข้อมูลต่อ' : (searching ? 'ลองใช้คำค้นหาอื่น หรือตรวจสอบชื่อเอกสาร' : 'เอกสารใหม่จะแสดงหลังจากสารบัญปรับปรุงแล้ว');
+      if (!state.items.length && listingOptions.type !== 'all') {
+        byId('emptyTitle').textContent = 'ไม่พบรายการประเภทที่เลือก';
+        byId('emptyMessage').textContent = 'เลือกประเภทอื่น หรือกดล้างตัวกรองเพื่อดูรายการทั้งหมด';
+      }
       byId('pagination').hidden = !state.token;
       byId('paginationMessage').textContent = searching ? 'ยังมีผลการค้นหาเพิ่มเติม' : 'ยังมีรายการเพิ่มเติม';
       byId('loadMoreButton').textContent = 'แสดงรายการเพิ่มเติม';
     });
+  }
+
+  function changeListing() {
+    if (state.busy || !['folder', 'search'].includes(state.view)) return;
+    listingOptions.type = byId('fileTypeFilter').value;
+    listingOptions.sort = byId('fileSort').value;
+    // Clear old previews and cursors before requesting the newly filtered collection.
+    restart();
   }
 
   function trustedUrl(value) {
@@ -619,8 +684,7 @@
     const images = galleryItems();
     const galleryIds = new Set(images.map(item => item.id));
     const libraryItems = state.items.filter(item => !galleryIds.has(item.id));
-    const rank = item => item.kind === 'folder' ? 0 : mediaType(item) === 'pdf' ? 1 : mediaType(item) === 'image' ? 2 : 3;
-    libraryItems.slice().sort((a, b) => rank(a) - rank(b)).forEach(renderItem);
+    libraryItems.forEach(renderItem);
     const wordCount = state.items.filter(isWord).length;
     byId('wordSection').hidden = wordCount === 0;
     byId('wordToggle').textContent = (byId('wordList').hidden ? '＋ แสดง' : '− ซ่อน') + 'ไฟล์ Word (' + wordCount + ')';
@@ -665,7 +729,7 @@
     const typeCell = node('span', 'type-label', label);
     const date = new Date(item.updatedAt);
     const dateCell = node('span', 'file-date', item.updatedAt && !Number.isNaN(date.getTime()) ?
-      new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Bangkok' }).format(date) : '—');
+      'แก้ไข ' + new Intl.DateTimeFormat('th-TH', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Bangkok' }).format(date) : '—');
     const meta = node('div', 'file-meta');
     meta.append(typeCell, dateCell);
     nameWrap.appendChild(meta);
@@ -697,6 +761,8 @@
     setRouteLink(byId('homeButton'), {});
     setRouteLink(byId('dashboardLink'), {});
     setRouteLink(byId('sidebarHome'), {});
+    setRouteLink(byId('sidebarAbout'), { page: 'about' });
+    setRouteLink(byId('aboutTeaserLink'), { page: 'about' });
     byId('navigationRetry').addEventListener('click', loadNavigation);
     byId('skipLink').addEventListener('click', function (event) {
       event.preventDefault();
@@ -707,6 +773,15 @@
     byId('refreshButton').addEventListener('click', refreshCatalog);
     byId('retryButton').addEventListener('click', refreshCatalog);
     byId('loadMoreButton').addEventListener('click', () => loadPage(true));
+    byId('fileTypeFilter').value = listingOptions.type;
+    byId('fileSort').value = listingOptions.sort;
+    byId('fileTypeFilter').addEventListener('change', changeListing);
+    byId('fileSort').addEventListener('change', changeListing);
+    byId('resetFilters').addEventListener('click', function () {
+      byId('fileTypeFilter').value = 'all';
+      byId('fileSort').value = 'name';
+      changeListing();
+    });
     byId('previousPreviewButton').addEventListener('click', () => stepPreview(-1));
     byId('nextPreviewButton').addEventListener('click', () => stepPreview(1));
     byId('expandPreviewButton').addEventListener('click', function () {
@@ -726,7 +801,7 @@
     function readLocation(mode) {
       const parameters = {};
       const query = new URLSearchParams(window.location.search);
-      for (const key of ['folder', 'file', 'q']) {
+      for (const key of ['folder', 'file', 'q', 'page']) {
         if (query.has(key)) parameters[key] = query.getAll(key).length === 1 ? query.get(key) : null;
       }
       navigate(parameters, mode);

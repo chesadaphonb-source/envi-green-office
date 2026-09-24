@@ -142,6 +142,32 @@
       const next = offset + PAGE_SIZE;
       return { items: items.slice(offset, next), totalItems: items.length, nextPageToken: next < items.length ? JSON.stringify([catalog.generatedAt, scope, next]) : null };
     }
+    function itemType(item) {
+      if (item.kind === 'folder') return 'folder';
+      if (item.typeLabel === 'Word' || /(?:msword|vnd\.openxmlformats-officedocument\.wordprocessingml|vnd\.ms-word)/i.test(item.mimeType) || /\.(docx?|docm|dotx?|dotm)$/i.test(item.name)) return 'word';
+      if (item.mimeType === 'application/pdf' || item.typeLabel === 'PDF' || /\.pdf$/i.test(item.name)) return 'pdf';
+      if (/^image\//.test(item.mimeType) || /\.(jpe?g|png|heic|heif|gif|webp|bmp|tiff?)$/i.test(item.name)) return 'image';
+      return 'other';
+    }
+    function listing(items, token, scope, options) {
+      const type = options && options.type || 'all';
+      const sort = options && options.sort || 'name';
+      if (!['all', 'folder', 'pdf', 'image', 'word', 'other'].includes(type) || !['name', 'updated', 'type'].includes(sort)) {
+        throw error('ตัวกรองหรือการเรียงลำดับไม่ถูกต้อง', 'INVALID_FILTER');
+      }
+      const counts = { all: items.length, folder: 0, pdf: 0, image: 0, word: 0, other: 0 };
+      let latestUpdatedAt = null;
+      items.forEach(item => {
+        counts[itemType(item)]++;
+        if (!latestUpdatedAt || Date.parse(item.updatedAt) > Date.parse(latestUpdatedAt)) latestUpdatedAt = item.updatedAt;
+      });
+      const selected = items.filter(item => type === 'all' || itemType(item) === type);
+      const rank = { folder: 0, pdf: 1, image: 2, word: 3, other: 4 };
+      const nameOrder = (a, b) => a.name.localeCompare(b.name, 'th', { numeric: true }) || a.id.localeCompare(b.id);
+      selected.sort((a, b) => sort === 'updated' ? Date.parse(b.updatedAt) - Date.parse(a.updatedAt) || nameOrder(a, b) :
+        sort === 'type' ? rank[itemType(a)] - rank[itemType(b)] || nameOrder(a, b) : compare(a, b));
+      return Object.assign(page(selected, token, JSON.stringify([scope, type, sort])), { counts, latestUpdatedAt });
+    }
     function request(method, args) {
       args = args || [];
       let result;
@@ -151,7 +177,7 @@
           break;
         case 'getFolderContents': {
           const folder = find(args[0], 'folder');
-          result = Object.assign(folderContext(folder), page(children.get(folder.id) || [], args[1], 'folder:' + folder.id));
+          result = Object.assign(folderContext(folder), listing(children.get(folder.id) || [], args[1], 'folder:' + folder.id, args[2]));
           break;
         }
         case 'getFileDetails': {
@@ -163,7 +189,7 @@
           const query = text(args[0], 120, true).trim().normalize('NFC');
           const needle = query.toLocaleLowerCase('th');
           const matches = query ? sorted.filter(item => item.name.normalize('NFC').toLocaleLowerCase('th').includes(needle)) : [];
-          result = Object.assign({ query, scannedFolders: children.size }, page(matches, args[1], 'search:' + query));
+          result = Object.assign({ query, scannedFolders: children.size }, listing(matches, args[1], 'search:' + query, args[2]));
           result.complete = !result.nextPageToken;
           break;
         }
