@@ -24,7 +24,7 @@
   <aside class="sidebar" aria-label="เมนูหลัก">
     <p class="sidebar-label">GREEN OFFICE</p>
     <a id="sidebarHome" class="sidebar-link" href="./"><span class="primary-menu-icon" aria-hidden="true">⌂</span><span>หน้าแรก</span></a>
-    <a id="sidebarAbout" class="sidebar-link" href="?page=about"><span class="primary-menu-icon" aria-hidden="true">❧</span><span>ความเป็นมา</span></a>
+    <a id="sidebarAbout" class="sidebar-link" href="?page=about"><span class="primary-menu-icon" aria-hidden="true">❧</span><span>เกี่ยวกับสำนักงานสีเขียว</span></a>
     <details class="criteria-menu" open>
       <summary class="sidebar-link"><span class="primary-menu-icon criteria-toggle" aria-hidden="true">▸</span><span>การดำเนินงานตามเกณฑ์</span></summary>
       <nav id="categoryNavigation" class="category-navigation" aria-label="หมวดการดำเนินงานตามเกณฑ์"><p class="sidebar-status">กำลังโหลดเมนู…</p></nav>
@@ -54,7 +54,7 @@
 
     <section id="aboutTeaser" class="about-teaser" aria-label="รู้จักโครงการ">
       <div><span class="section-eyebrow">รู้จัก GREEN OFFICE ENVI</span><h2>จากความตั้งใจ สู่การลงมือทำร่วมกัน</h2><p>เรื่องราวการพัฒนาสำนักงานสีเขียวของคณะสิ่งแวดล้อม</p></div>
-      <a id="aboutTeaserLink" class="button button-outline" href="?page=about">อ่านความเป็นมา <span aria-hidden="true">→</span></a>
+      <a id="aboutTeaserLink" class="button button-outline" href="?page=about">รู้จักสำนักงานสีเขียว <span aria-hidden="true">→</span></a>
     </section>
 
     <section class="search-section" aria-labelledby="searchLabel">
@@ -96,19 +96,64 @@
       <div id="energyChartArea" class="energy-chart-area" aria-hidden="true"></div>
 
       <article id="aboutPage" class="about-page" hidden>
-        <section class="story-intro" aria-labelledby="storyIntroTitle">
+        <nav class="about-contents" aria-label="เลือกหัวข้อเกี่ยวกับสำนักงานสีเขียว">
+          <span class="about-contents-label">เลือกอ่านหัวข้อ</span>
+          <div class="about-contents-grid">
+            <button id="jumpOverview" type="button" aria-controls="aboutOverview"><span aria-hidden="true">01</span> รู้จักโครงการ</button>
+            <button id="jumpPolicy" type="button" aria-controls="aboutPolicy"><span aria-hidden="true">02</span> นโยบายและเป้าหมาย</button>
+            <button id="jumpTeam" type="button" aria-controls="aboutTeam"><span aria-hidden="true">03</span> คณะทำงาน</button>
+            <button id="jumpJourney" type="button" aria-controls="aboutJourney"><span aria-hidden="true">04</span> พัฒนาการ</button>
+            <button id="jumpAward" type="button" aria-controls="aboutAward"><span aria-hidden="true">05</span> ผลการรับรอง</button>
+            <button id="jumpDocuments" type="button" aria-controls="aboutDocuments"><span aria-hidden="true">06</span> เอกสารประกอบ</button>
+          </div>
+        </nav>
+        <section id="aboutOverview" class="story-intro" aria-labelledby="storyIntroTitle" tabindex="-1">
           <div><span class="story-label">สิ่งแวดล้อม เริ่มที่สำนักงานของเรา</span><h3 id="storyIntroTitle">เปลี่ยนความรู้ด้านสิ่งแวดล้อม<br>ให้เป็นวิถีการทำงาน</h3><p>คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์ ขับเคลื่อนสำนักงานสีเขียวให้สอดคล้องกับนโยบายมหาวิทยาลัยสีเขียว (Green University) และการลดการปล่อยก๊าซเรือนกระจกเพื่อมุ่งสู่ความเป็นกลางทางคาร์บอน จึงกำหนดนโยบายการบริหารจัดการสำนักงานสีเขียวและความเป็นกลางทางคาร์บอนของคณะ</p><a class="source-link" href="https://envi.ku.ac.th/?p=15779" target="_blank" rel="noopener noreferrer">อ่านที่มาจากข่าวนโยบายของคณะ ↗</a></div>
           <figure><img src="assets/images/green-office-building.png" width="1536" height="1024" alt="ภาพวาดอาคารคณะสิ่งแวดล้อมท่ามกลางต้นไม้" loading="lazy" decoding="async"><figcaption>คณะสิ่งแวดล้อม · มหาวิทยาลัยเกษตรศาสตร์</figcaption></figure>
         </section>
-        <aside class="story-achievement" aria-label="ผลการรับรองประจำปี 2568">
-          <div class="achievement-year">ผลการประเมิน<br><strong>2568</strong></div><div><h3>สำนักงานสีเขียว ระดับดีเยี่ยม (ทอง)</h3><p>ข่าวคณะเผยแพร่เมื่อ 15 มกราคม 2569 ระบุผลรับรองจากกรมการเปลี่ยนแปลงสภาพภูมิอากาศและสิ่งแวดล้อม</p><a class="source-link" href="https://envi.ku.ac.th/?p=18854" target="_blank" rel="noopener noreferrer">อ่านข่าวผลการรับรอง ↗</a></div><div class="achievement-score"><strong>98.44</strong><span>คะแนนตามข่าวคณะ</span></div>
-        </aside>
-        <figure class="award-image" aria-labelledby="awardImageCaption">
-          <a href="assets/images/data1.png" target="_blank" rel="noopener noreferrer" aria-label="เปิดภาพผลรับรองสำนักงานสีเขียว ปี 2568 ขนาดเต็มในแท็บใหม่"><img src="assets/images/data1.png" width="1022" height="576" alt="คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์ ได้รับรองสำนักงานสีเขียวประจำปี 2568 ระดับดีเยี่ยม (ทอง) โดยกรมการเปลี่ยนแปลงสภาพภูมิอากาศและสิ่งแวดล้อม" loading="lazy" decoding="async"></a>
-          <figcaption id="awardImageCaption"><strong>ความภาคภูมิใจของคณะสิ่งแวดล้อม</strong><span>ภาพประชาสัมพันธ์ผลรับรองสำนักงานสีเขียว ประจำปี 2568 ระดับดีเยี่ยม (ทอง)</span></figcaption>
-          <div class="award-image-actions"><a class="button button-outline" href="assets/images/data1.png" target="_blank" rel="noopener noreferrer">เปิดภาพเต็ม ↗</a><a class="button button-outline" href="assets/images/data1.png" download="green-office-envi-gold-2568.png">ดาวน์โหลดภาพ</a></div>
-        </figure>
-        <section class="story-section" aria-labelledby="journeyTitle">
+        <section class="story-section" aria-labelledby="greenOfficeMeaning">
+          <span class="section-eyebrow">เริ่มจากความเข้าใจเดียวกัน</span><h3 id="greenOfficeMeaning">สำนักงานสีเขียวคืออะไร</h3>
+          <p>สำนักงานสีเขียว (Green Office) เป็นแนวทางการจัดการสำนักงานและกิจกรรมขององค์กร โดยมุ่งลดผลกระทบต่อสิ่งแวดล้อมให้น้อยที่สุด ผ่านการใช้ทรัพยากรและพลังงานอย่างรู้คุณค่า มีระบบจัดการของเสียอย่างมีประสิทธิภาพ รวมถึงการจัดซื้อจัดจ้างที่เป็นมิตรกับสิ่งแวดล้อม และที่สำคัญคือการลดการปล่อยก๊าซเรือนกระจกจากการดำเนินงาน</p>
+          <div class="green-office-principles" aria-label="หลักการสำคัญของสำนักงานสีเขียว">
+            <div class="principle-card">
+              <span class="principle-icon" aria-hidden="true">⚡</span>
+              <div>
+                <h4>ใช้ทรัพยากรและพลังงานอย่างรู้คุณค่า</h4>
+                <p>ติดตามและลดการใช้ไฟฟ้า น้ำ กระดาษ และเชื้อเพลิง เพื่อให้การดำเนินงานมีประสิทธิภาพสูงสุดและเป็นมิตรกับสิ่งแวดล้อม</p>
+              </div>
+            </div>
+            <div class="principle-card">
+              <span class="principle-icon" aria-hidden="true">♻</span>
+              <div>
+                <h4>จัดการของเสียอย่างมีประสิทธิภาพ</h4>
+                <p>แยกและลดปริมาณขยะ จัดการของเสียอันตราย และส่งเสริมการนำวัสดุกลับมาใช้ใหม่ภายในองค์กร</p>
+              </div>
+            </div>
+            <div class="principle-card">
+              <span class="principle-icon" aria-hidden="true">🛒</span>
+              <div>
+                <h4>จัดซื้อจัดจ้างที่เป็นมิตรกับสิ่งแวดล้อม</h4>
+                <p>เลือกสินค้า บริการ และคู่ค้าที่คำนึงถึงผลกระทบต่อสิ่งแวดล้อม ตั้งแต่กระบวนการผลิตจนถึงการจัดส่ง</p>
+              </div>
+            </div>
+          </div>
+          <p class="story-note">แนวคิดทั่วไปสรุปจาก <a href="https://greenoff.arch.ku.ac.th/?page_id=2717" target="_blank" rel="noopener noreferrer">บทความเกี่ยวกับสำนักงานสีเขียวของคณะสถาปัตยกรรมศาสตร์ มก. ↗</a> และ <a href="https://greenoffice.oou.cmu.ac.th/about-us" target="_blank" rel="noopener noreferrer">สำนักงานมหาวิทยาลัย มช. ↗</a> · ส่วนประวัติและผลรับรองด้านล่างเป็นข้อมูลของคณะสิ่งแวดล้อม</p>
+          <dl class="organization-facts"><div><dt>หน่วยงาน</dt><dd>คณะสิ่งแวดล้อม<br>มหาวิทยาลัยเกษตรศาสตร์</dd></div><div><dt>แนวทางของคณะ</dt><dd>สำนักงานสีเขียวและ<br>ความเป็นกลางทางคาร์บอน</dd></div><div><dt>เอกสารในเว็บไซต์</dt><dd>จัดหมวดตามเกณฑ์แบบต่ออายุ / ยกระดับ ประจำปี 2569</dd></div></dl>
+        </section>
+        <section id="aboutPolicy" class="story-section" aria-labelledby="policyTitle" tabindex="-1">
+          <span class="section-eyebrow">จากนโยบายสู่การปฏิบัติ</span><h3 id="policyTitle">นโยบายและเป้าหมาย</h3>
+          <p>นโยบายของคณะเชื่อมการพัฒนาสำนักงานสีเขียวกับการลดก๊าซเรือนกระจก ส่วนการอบรมบุคลากรครอบคลุมการใช้ทรัพยากร การจัดการของเสีย และการจัดซื้อที่เป็นมิตรกับสิ่งแวดล้อม</p>
+          <div class="about-pillars"><div><span aria-hidden="true">01</span><h4>ใช้ทรัพยากรอย่างคุ้มค่า</h4><p>ทำความเข้าใจการใช้พลังงานและทรัพยากร เพื่อปรับการทำงานให้มีประสิทธิภาพ</p></div><div><span aria-hidden="true">02</span><h4>ลดผลกระทบต่อสิ่งแวดล้อม</h4><p>ให้ความสำคัญกับของเสีย มลพิษ การจัดซื้อ และก๊าซเรือนกระจกจากการทำงาน</p></div><div><span aria-hidden="true">03</span><h4>ร่วมมือและพัฒนาต่อเนื่อง</h4><p>สร้างความเข้าใจให้บุคลากร และนำข้อเสนอแนะมาทบทวนการดำเนินงาน</p></div></div>
+          <p class="about-source-note">สรุปประเด็นจาก <a href="https://envi.ku.ac.th/?p=15779" target="_blank" rel="noopener noreferrer">ข่าวนโยบาย</a> และ <a href="https://envi.ku.ac.th/?p=13495" target="_blank" rel="noopener noreferrer">ข่าวการอบรมของคณะ</a> · ค่าเป้าหมายเชิงตัวเลขให้ยึดตามเอกสารประจำปี</p>
+          <div class="about-actions"><a id="aboutGoalsLink" class="button button-primary" href="?file=1G6Ye599TUpZqgWmo-nJceeyoocG_woBf">อ่านเอกสารค่าเป้าหมาย 2569</a><a class="button button-outline" href="https://envi.ku.ac.th/?p=15779" target="_blank" rel="noopener noreferrer">อ่านข่าวนโยบายของคณะ ↗</a></div>
+        </section>
+        <section id="aboutTeam" class="story-section" aria-labelledby="teamTitle" tabindex="-1">
+          <span class="section-eyebrow">ผู้ร่วมขับเคลื่อน</span><h3 id="teamTitle">คณะทำงานสำนักงานสีเขียว</h3>
+          <p>ดูรายชื่อและหน้าที่จากคำสั่งแต่งตั้งที่จัดเก็บในหมวด 1 ได้โดยตรง เพื่อใช้อ้างอิงผู้รับผิดชอบการดำเนินงานของคณะ</p>
+          <div class="team-document"><div><span class="document-kind">PDF · หมวด 1</span><h4>คำสั่งแต่งตั้งคณะทำงานขับเคลื่อนสำนักงานสีเขียว</h4><p>ชื่อไฟล์ในสารบัญ: 19.69 คำสั่งแต่งตั้งคณะทำงานขับเคลื่อนสำนัก.pdf</p></div><a id="aboutTeamLink" class="button button-primary" href="?file=1KTAOQguACJ6Ds41X_YZrgCVXzx0951Dv">เปิดอ่านคำสั่งในเว็บ</a></div>
+          <p class="about-source-note">ส่วนสรุปรายชื่อและบทบาทบนหน้านี้อยู่ระหว่างตรวจทานกับเอกสารต้นฉบับ</p>
+        </section>
+        <section id="aboutJourney" class="story-section" aria-labelledby="journeyTitle" tabindex="-1">
           <span class="section-eyebrow">จากการวางแนวทาง สู่การพัฒนาต่อเนื่อง</span><h3 id="journeyTitle">เส้นทางสำนักงานสีเขียวของเรา</h3><p class="story-note">เรียบเรียงจากข่าวทางการที่ตรวจพบ ลำดับนี้เริ่มจากหลักฐานการหารือในเดือนมกราคม 2568 ซึ่งยังไม่ใช่การยืนยันวันเริ่มโครงการตามคำสั่งอย่างเป็นทางการ</p>
           <ol class="story-timeline">
             <li><time datetime="2025-01-22">22 มกราคม 2568</time><div><h4>หารือแนวทางพัฒนาสำนักงาน</h4><p>คณะหารือกับผู้เชี่ยวชาญจากกรมการเปลี่ยนแปลงสภาพภูมิอากาศ เพื่อพัฒนาระบบบริหารจัดการสำนักงานตามแนวทาง Green Office</p><a class="source-link" href="https://envi.ku.ac.th/?p=11647" target="_blank" rel="noopener noreferrer">ข่าวการหารือ · เผยแพร่ 24 ม.ค. 2568 ↗</a></div></li>
@@ -120,11 +165,51 @@
             <li><time datetime="2026-08-05">5 สิงหาคม 2569</time><div><h4>เติบโตต่อด้วยเสียงของทุกคน</h4><p>สื่อสารโครงการ ENVI KU Grows Green Office: Year 2 เชิญบุคลากร นิสิต และผู้ใช้บริการร่วมเสนอความคิดเห็นเพื่อพัฒนาสิ่งแวดล้อมของคณะ</p><a class="source-link" href="https://envi.ku.ac.th/?p=24502" target="_blank" rel="noopener noreferrer">ข่าวการมีส่วนร่วม ปีที่ 2 ↗</a></div></li>
           </ol>
         </section>
+        <section id="aboutAward" class="about-award-section" aria-label="ผลการรับรองสำนักงานสีเขียว" tabindex="-1">
+        <aside class="story-achievement" aria-label="ผลการรับรองประจำปี 2568">
+          <div class="achievement-year">ผลการประเมิน<br><strong>2568</strong></div><div><h3>สำนักงานสีเขียว ระดับดีเยี่ยม (ทอง)</h3><p>ข่าวคณะเผยแพร่เมื่อ 15 มกราคม 2569 ระบุผลรับรองจากกรมการเปลี่ยนแปลงสภาพภูมิอากาศและสิ่งแวดล้อม</p><a class="source-link" href="https://envi.ku.ac.th/?p=18854" target="_blank" rel="noopener noreferrer">อ่านข่าวผลการรับรอง ↗</a></div><div class="achievement-score"><strong>98.44</strong><span>คะแนนตามข่าวคณะ</span></div>
+        </aside>
+        <figure class="award-image" aria-labelledby="awardImageCaption">
+          <a href="assets/images/data1.png" target="_blank" rel="noopener noreferrer" aria-label="เปิดภาพผลรับรองสำนักงานสีเขียว ปี 2568 ขนาดเต็มในแท็บใหม่"><img src="assets/images/data1.png" width="1022" height="576" alt="คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์ ได้รับรองสำนักงานสีเขียวประจำปี 2568 ระดับดีเยี่ยม (ทอง) โดยกรมการเปลี่ยนแปลงสภาพภูมิอากาศและสิ่งแวดล้อม" loading="lazy" decoding="async"></a>
+          <figcaption id="awardImageCaption"><strong>ความภาคภูมิใจของคณะสิ่งแวดล้อม</strong><span>ภาพประชาสัมพันธ์ผลรับรองสำนักงานสีเขียว ประจำปี 2568 ระดับดีเยี่ยม (ทอง)</span></figcaption>
+          <div class="award-image-actions"><a class="button button-outline" href="assets/images/data1.png" target="_blank" rel="noopener noreferrer">เปิดภาพเต็ม ↗</a><a class="button button-outline" href="assets/images/data1.png" download="green-office-envi-gold-2568.png">ดาวน์โหลดภาพ</a></div>
+        </figure>
+        </section>
+        <section id="aboutDocuments" class="story-section" aria-labelledby="documentsTitle" tabindex="-1">
+          <span class="section-eyebrow">อ่านหลักฐานประกอบ</span><h3 id="documentsTitle">เอกสารที่เกี่ยวข้อง</h3><p>เปิดดูเอกสารในเว็บไซต์ หรือเลือกโฟลเดอร์เพื่อดูไฟล์ประกอบทั้งหมด</p>
+          <div class="about-document-grid">
+            <a id="aboutGoalsFolder" class="about-document-link" href="?folder=15UhQtkAUINMVNyZCsaTPoQxgiF50Mfsp">
+              <span class="document-kind">โฟลเดอร์ · หมวด 1</span>
+              <strong>ค่าเป้าหมาย 2569</strong>
+              <span>เอกสารเป้าหมายและไฟล์ประกอบ <span aria-hidden="true">→</span></span>
+            </a>
+            <a id="aboutTeamFolder" class="about-document-link" href="?folder=1HkaJK2F0y4eGHKBq876XuhC-nGNaW7Og">
+              <span class="document-kind">โฟลเดอร์ · หมวด 1</span>
+              <strong>คำสั่งคณะทำงาน</strong>
+              <span>คำสั่ง PDF รูปภาพ และเอกสารที่เกี่ยวข้อง <span aria-hidden="true">→</span></span>
+            </a>
+          </div>
+          <div class="direct-pdf-links" aria-label="เปิดเอกสาร PDF โดยตรง">
+            <p class="direct-pdf-label"><span aria-hidden="true">📄</span> เปิดเอกสารสำคัญโดยตรง (ไม่ต้องผ่าน Drive)</p>
+            <div class="direct-pdf-grid">
+              <a id="directPdfGoals" class="direct-pdf-card" href="?file=1G6Ye599TUpZqgWmo-nJceeyoocG_woBf" aria-label="เปิดเอกสารค่าเป้าหมายสำนักงานสีเขียว 2569">
+                <span class="direct-pdf-type" aria-hidden="true">PDF</span>
+                <span class="direct-pdf-name">เอกสารค่าเป้าหมายสำนักงานสีเขียว ประจำปี 2569</span>
+                <span class="direct-pdf-meta">หมวด 1 · เปิดในเว็บ <span aria-hidden="true">↗</span></span>
+              </a>
+              <a id="directPdfTeam" class="direct-pdf-card" href="?file=1KTAOQguACJ6Ds41X_YZrgCVXzx0951Dv" aria-label="เปิดคำสั่งแต่งตั้งคณะทำงานสำนักงานสีเขียว">
+                <span class="direct-pdf-type" aria-hidden="true">PDF</span>
+                <span class="direct-pdf-name">คำสั่งแต่งตั้งคณะทำงานขับเคลื่อนสำนักงานสีเขียว</span>
+                <span class="direct-pdf-meta">หมวด 1 · เปิดในเว็บ <span aria-hidden="true">↗</span></span>
+              </a>
+            </div>
+          </div>
+        </section>
         <section class="story-section story-preparation" aria-labelledby="preparationTitle">
           <span class="section-eyebrow">เติมเรื่องราวให้ครบถ้วน</span><h3 id="preparationTitle">ข้อมูลโครงการที่กำลังรวบรวม</h3><p>เตรียมพื้นที่สำหรับเอกสารต้นฉบับและรายละเอียดที่ต้องยืนยันกับคณะ ก่อนนำมาแสดงอย่างเป็นทางการ</p>
           <div class="preparation-grid">
-            <section class="preparation-card"><span class="pending-label">รอเอกสารต้นฉบับ</span><h4>จุดเริ่มต้นและคณะทำงาน</h4><p>คำสั่งเริ่มโครงการ วันที่มีผล และคำสั่งแต่งตั้งคณะทำงาน เพื่อเติมประวัติและบทบาทผู้รับผิดชอบให้ถูกต้อง</p></section>
-            <section class="preparation-card"><span class="pending-label">รอตรวจฉบับปัจจุบัน</span><h4>นโยบายและเป้าหมาย</h4><p>ประกาศลงนาม ขอบเขตพื้นที่ และเป้าหมายประจำปี เพื่อให้เปิดอ่านต้นฉบับได้จากส่วนนี้</p></section>
+            <section class="preparation-card"><span class="pending-label">รอข้อมูลยืนยันเพิ่มเติม</span><h4>จุดเริ่มต้นและบทบาทคณะทำงาน</h4><p>วันเริ่มโครงการอย่างเป็นทางการ และสรุปรายชื่อกับหน้าที่จากคำสั่งแต่งตั้ง เพื่อเติมข้อมูลให้ครบถ้วน</p></section>
+            <section class="preparation-card"><span class="pending-label">รอตรวจรายละเอียด</span><h4>นโยบายและขอบเขตพื้นที่</h4><p>ประกาศนโยบายฉบับลงนาม ขอบเขตการดำเนินงาน และสรุปค่าเป้าหมายจากเอกสารประจำปี</p></section>
             <section class="preparation-card"><span class="pending-label">รอข้อมูลที่ตรวจสอบแล้ว</span><h4>ผลลัพธ์และเรื่องราวการมีส่วนร่วม</h4><p>ผลการใช้ทรัพยากรเทียบเป้าหมาย ภาพกิจกรรม และเอกสารรับรองฉบับเต็ม โดยพื้นที่กราฟการใช้พลังงานยังอยู่ที่หน้าแรก</p></section>
           </div>
         </section>

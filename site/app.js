@@ -4,6 +4,10 @@
   const state = { view: 'dashboard', folderId: null, query: '', token: null, items: [], request: 0, busy: false, selectedId: null, expanded: false };
   const galleryCards = new Map();
   const listingOptions = { type: 'all', sort: 'name' };
+  // โฟลเดอร์/ไฟล์ที่ซ่อนชั่วคราว: ระบุชื่อที่ตรงทั้งหมด (case-sensitive) ต่อ categoryNumber
+  const HIDDEN_ITEMS = {
+    2: ['ส่งข้อมูลเพื่อให้หมวด 2 ทำประชาสัมพันธ์ ปี 69']
+  };
   let appUrl = '';
   let catalogClient;
   let currentRoute = null;
@@ -256,10 +260,10 @@
     byId('errorPanel').hidden = true;
     setBusy(false);
     byId('sectionEyebrow').textContent = 'OUR GREEN JOURNEY';
-    byId('viewTitle').textContent = 'ความเป็นมาของสำนักงานสีเขียว';
+    byId('viewTitle').textContent = 'เกี่ยวกับสำนักงานสีเขียว';
     byId('viewDescription').textContent = 'คณะสิ่งแวดล้อม มหาวิทยาลัยเกษตรศาสตร์';
-    byId('breadcrumbs').appendChild(node('li', '', 'ความเป็นมา'));
-    document.title = 'ความเป็นมา | Green Office ENVI';
+    byId('breadcrumbs').appendChild(node('li', '', 'เกี่ยวกับสำนักงานสีเขียว'));
+    document.title = 'เกี่ยวกับสำนักงานสีเขียว | Green Office ENVI';
     byId('viewTitle').focus({ preventScroll: true });
     loadNavigation();
   }
@@ -507,10 +511,12 @@
       }
       if (!append) state.items = [];
       const seen = new Set(state.items.map(item => item.kind + ':' + item.id));
+      const hiddenNames = !searching && data.folder ? (HIDDEN_ITEMS[data.folder.categoryNumber] || []) : [];
       const added = data.items.filter(function (item) {
         const key = item.kind + ':' + item.id;
         if (seen.has(key)) return false;
         seen.add(key);
+        if (hiddenNames.includes(item.name)) return false;
         return true;
       });
       state.items.push(...added);
@@ -763,6 +769,19 @@
     setRouteLink(byId('sidebarHome'), {});
     setRouteLink(byId('sidebarAbout'), { page: 'about' });
     setRouteLink(byId('aboutTeaserLink'), { page: 'about' });
+    setRouteLink(byId('aboutGoalsLink'), { file: '1G6Ye599TUpZqgWmo-nJceeyoocG_woBf' });
+    setRouteLink(byId('aboutTeamLink'), { file: '1KTAOQguACJ6Ds41X_YZrgCVXzx0951Dv' });
+    setRouteLink(byId('aboutGoalsFolder'), { folder: '15UhQtkAUINMVNyZCsaTPoQxgiF50Mfsp' });
+    setRouteLink(byId('aboutTeamFolder'), { folder: '1HkaJK2F0y4eGHKBq876XuhC-nGNaW7Og' });
+    for (const [button, target] of Object.entries({
+      jumpOverview: 'aboutOverview', jumpPolicy: 'aboutPolicy', jumpTeam: 'aboutTeam',
+      jumpJourney: 'aboutJourney', jumpAward: 'aboutAward', jumpDocuments: 'aboutDocuments'
+    })) {
+      byId(button).addEventListener('click', function () {
+        byId(target).focus({ preventScroll: true });
+        byId(target).scrollIntoView({ behavior: 'auto', block: 'start' });
+      });
+    }
     byId('navigationRetry').addEventListener('click', loadNavigation);
     byId('skipLink').addEventListener('click', function (event) {
       event.preventDefault();
